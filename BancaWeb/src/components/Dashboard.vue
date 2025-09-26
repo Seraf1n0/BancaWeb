@@ -74,9 +74,12 @@
                 <section v-else-if="activeSection === 'transfers'" class="content-section"
                     aria-labelledby="transfers-section-title">
                     <h3 id="transfers-section-title" class="section-title">Transferencias</h3>
-                    <div class="placeholder-content">
-                        <p>Contenido de transferencias será agregado aquí</p>
-                    </div>
+                    <TransfersSection :accounts="accounts">
+                        <template v-slot="{ transferType, accounts }">
+                            <TransferForm v-if="transferType" :transfer-type="transferType" :accounts="accounts"
+                                @submit-transfer="handleSubmitTransfer" />
+                        </template>
+                    </TransfersSection>
                 </section>
             </div>
         </main>
@@ -87,10 +90,12 @@
 import AccountSection from '../components/AccountsSection.vue'
 import AccountCard from '../components/AccountCard.vue'
 import CardSection from '../components/CardSection.vue'
+import TransfersSection from './TransfersSection.vue'
+import TransferForm from './TransferForm.vue'
 
 export default {
     name: 'Dashboard',
-    components: { AccountSection, AccountCard },
+    components: { AccountSection, AccountCard, TransfersSection, TransferForm },
     data() {
         return {
             isMenuOpen: false,
@@ -159,7 +164,8 @@ export default {
                     moneda: 'USD',
                     saldo: 400
                 }
-            ]
+            ],
+            transferType: "propias"
         }
     },
     computed: {
@@ -199,8 +205,9 @@ export default {
         handleViewDetails(accountId) {
             console.log('detalles de cuenta: ', accountId)
         },
-        handleQuickTransfer(accountId) {
-            console.log('Transferencia rápida desde:', accountId)
+        handleSubmitTransfer(transferData) {
+            console.log('Datos de transferencia:', transferData)
+            alert(`Transferencia iniciada:\nDesde: ${transferData.origen}\nA: ${transferData.destino}\nMonto: ${transferData.moneda} ${transferData.monto}`)
         }
     }
 }
