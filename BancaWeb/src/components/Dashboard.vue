@@ -66,9 +66,8 @@
                 <section v-else-if="activeSection === 'cards'" class="content-section"
                     aria-labelledby="cards-section-title">
                     <h3 id="cards-section-title" class="section-title">Mis Tarjetas</h3>
-                    <div class="placeholder-content">
-                        <p>Contenido de tarjetas será agregado aquí</p>
-                    </div>
+                    <CardSection>
+                    </CardSection>
                 </section>
 
                 <!-- Componente Transferencias -->
@@ -87,6 +86,7 @@
 <script>
 import AccountSection from '../components/AccountsSection.vue'
 import AccountCard from '../components/AccountCard.vue'
+import CardSection from '../components/CardSection.vue'
 
 export default {
     name: 'Dashboard',
@@ -102,6 +102,55 @@ export default {
                     tipo: 'Ahorros',
                     moneda: 'CRC',
                     saldo: 250000
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
+                },
+                {
+                    account_id: 'US-009-54321',
+                    alias: 'Cuenta Dólares',
+                    tipo: 'Corriente',
+                    moneda: 'USD',
+                    saldo: 400
                 },
                 {
                     account_id: 'US-009-54321',

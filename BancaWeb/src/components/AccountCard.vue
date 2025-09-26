@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <!-- Número de cuenta (parcialmente oculto) -->
+        <!-- Número de la cuenta (sin mostrarlo todo) -->
         <div class="account-number">
             <span class="number-label">Número de cuenta:</span>
             <span class="number-value" :aria-label="`Número de cuenta ${maskedAccountNumber}`">
@@ -25,7 +25,6 @@
             </span>
         </div>
 
-        <!-- Saldo principal -->
         <div class="balance-section">
             <span class="balance-label">Saldo disponible</span>
             <div :id="`card-balance-${account.account_id}`" class="balance-amount" :class="balanceClass"
@@ -34,7 +33,7 @@
             </div>
         </div>
 
-        <!-- Información adicional -->
+        <!-- Futuro: Poner aqui la fecha del ultimo movimiento de la cuenta -->
         <div class="card-details">
             <div class="detail-item">
                 <span class="detail-label">Última actualización:</span>
@@ -42,7 +41,6 @@
             </div>
         </div>
 
-        <!-- Acciones -->
         <div class="card-actions">
             <button class="action-btn primary" type="button" @click="handleViewDetails"
                 :aria-label="`Ver detalles de ${account.alias}`">
@@ -66,7 +64,7 @@ const emit = defineEmits<{
     viewDetails: [accountId: string]
 }>()
 
-// Computed properties
+// Los calculos para algunas cosas con computed
 const maskedAccountNumber = computed(() => {
     const fullNumber = props.account.account_id
     // esto para mostrar unicamente los 4 digitos ultimos y ptrfijo
@@ -106,7 +104,7 @@ const statusClass = computed(() => {
 })
 
 const lastUpdated = computed(() => {
-    // Simulamos una fecha de última actualización
+    // Simulamos una fecha de última actualización. luego será del ultimo movimiento
     const now = new Date()
     const today = now.toLocaleDateString('es-CR', {
         day: '2-digit',
@@ -120,7 +118,7 @@ const lastUpdated = computed(() => {
     return `${today} ${time}`
 })
 
-// Methods
+// metodo para ver detalles
 const handleViewDetails = () => {
     emit('viewDetails', props.account.account_id)
 }
