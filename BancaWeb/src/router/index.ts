@@ -26,6 +26,15 @@ const routes: RouteRecordRaw[] = [
             title: 'Panel - Mi Banca',
             requiresAuth: true
         }
+    },
+    {
+        path: '/cardsection',
+        name: 'CreditCard',
+        component: () => import('../components/CardSection.vue'),
+        meta: {
+            title: 'Panel - Mi Banca',
+            requiresAuth: true
+        }
     }
 ]
 
