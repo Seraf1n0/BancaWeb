@@ -267,7 +267,8 @@ const isValidUsername = computed(() => {
             <button type="button" @click="showTermsModal = true" class="btn-terms">Ver términos y condiciones</button>
             <CardModal v-if="showTermsModal" @close="showTermsModal = false">
                 <div class="pdf-container">
-                <iframe :src="pdfUrl" width="100%" height="650px" style="border:none;" class="frame desktop-pdf"></iframe>
+                <iframe v-show="showTermsModal" :src="pdfUrl" class="pdf-iframe" width="100%" height="650px" style="border: 2px solid red; background: black;" @load="console.log('✅ PDF cargado correctamente')" />
+
                 <div class="mobile-pdf-fallback">
                     <p>En dispositivos móviles o tablets, haz clic en el enlace para ver el PDF:</p>
                     <a :href="pdfUrl" target="_blank" rel="noopener" class="pdf-link">📄 Abrir Términos y Condiciones</a>
