@@ -1,11 +1,21 @@
+
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
-import Swal from 'sweetalert2'
+
 import CardModal from './CardModal.vue'
+import CustomAlert from './CustomAlert.vue'
 const showTermsModal = ref(false)
 const pdfUrl = '/TCBancoPrometedores.pdf' 
 
+
+const customAlert = ref({
+  show: false,
+  type: 'success',
+  message: '',
+  autoClose: false,
+  duration: 4000
+});
 const checkboxValue = ref('')
 const username = ref('');
 const firstPassword = ref('');
@@ -20,6 +30,12 @@ const router = useRouter()
 const secondPassword = ref('')
 const checkboxTerms= ref(false)
 
+
+
+const showAlert = (type, message, autoClose = true, duration = 4000) => {
+  customAlert.value = { show: true, type, message, autoClose, duration };
+}
+
 const submitData = () => {
   if (isValidId.value) {
     console.log('Datos listos para enviar:', {
@@ -33,21 +49,15 @@ const submitData = () => {
       phoneNumber: phoneNumber.value,
       password: firstPassword.value,
     });
-    Swal.fire({
-        title: 'Registro exitoso',
-        text: 'Su cuenta ha sido creada exitosamente',
-        icon: 'success',
-        confirmButtonText: 'Continuar'
-    }).then(() =>{
-        router.push('/loginForm')
-    })
+    showAlert("loading", "🕐 Su cuenta está siendo creada...", false);
+        setTimeout(() => {
+        showAlert("success", "✅ Su cuenta fue creada con éxito");
+        setTimeout(() => {
+            router.push('/loginForm');
+        }, 2000);
+    }, 3000);       
   } else {
-    Swal.fire({
-        title: 'Error en el formulario',
-        text: 'Por favor, corrija los errores antes de enviar el formulario.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar'
-    });
+    showAlert("error", "❌ Por favor, corrija los errores antes de enviar el formulario.");
   }
 };
 
@@ -185,6 +195,8 @@ const isValidUsername = computed(() => {
 <template>
     <form @submit.prevent="submitData">
         <div class="wrap">
+
+
       <div class="radio-group">
         <span><input type="radio" id="option1" class="input-checkbox" value="option1" v-model="checkboxValue"><label for="option1">Nacional</label></span>
         <span><input type="radio" id="option2" class="input-checkbox" value="option2" v-model="checkboxValue"><label for="option2">DIMEX</label></span>
@@ -255,9 +267,13 @@ const isValidUsername = computed(() => {
 
             <button type="button" @click="showTermsModal = true" class="btn-terms">Ver términos y condiciones</button>
             <CardModal v-if="showTermsModal" @close="showTermsModal = false">
-              <template #default>
-                <iframe :src="pdfUrl" width="100%" height="650px" style="border:none;overflow-x:hidden;" scrolling="no"></iframe>
-              </template>
+                <div class="pdf-container">
+                <iframe :src="pdfUrl" width="100%" height="650px" style="border:none;" class="frame desktop-pdf"></iframe>
+                <div class="mobile-pdf-fallback">
+                    <p>En dispositivos móviles o tablets, haz clic en el enlace para ver el PDF:</p>
+                    <a :href="pdfUrl" target="_blank" rel="noopener" class="pdf-link">📄 Abrir Términos y Condiciones</a>
+                </div>
+                </div>
             </CardModal>
             <div class="terms-row">
                 <label for="terms" class="op1">He leído y acepto los términos y condiciones</label>
@@ -265,7 +281,15 @@ const isValidUsername = computed(() => {
             </div>
 
 
-            
+      <CustomAlert
+        :show="customAlert.show"
+        :type="customAlert.type"
+        :message="customAlert.message"
+        :autoClose="customAlert.autoClose"
+        :duration="customAlert.duration"
+        @close="customAlert.show = false"
+      />
+
             <button type="submit" :disabled="!FormComplete" class="submit-btn">
                 Enviar
             </button>
@@ -423,5 +447,115 @@ const isValidUsername = computed(() => {
 .submit-btn:hover {
   background-color: #45a049;
 }
+
+@media (max-width: 480px) {
+  .wrap {
+    padding: 1rem;
+    min-height: 100vh; 
+    max-width: 100%;
+  }
+
+  .wrap input::placeholder {
+    font-size: 12px;
+  }
+  
+  .frame{
+    display: none;
+  }
+  
+  .pdf-mobile-fallback {
+    display: block;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+  }
+  
+  .pdf-mobile-fallback a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .radio-group label {
+    white-space: normal;
+    width: 100%;
+  }
+}
+
+@media (min-width:480px) and (max-width: 767px) {
+  .wrap {
+    padding: 1rem;
+    min-height: 100vh; 
+    max-width: 100%;
+  }
+
+  .frame{
+    display: none;
+  }
+  
+  .mobile-pdf-fallback {
+    display: block;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+  }
+  
+  .mobile-pdf-fallback a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wrap {
+    padding: 1rem;
+    min-height: 100vh; 
+    max-width: 100%;
+  }
+
+  .frame.desktop-pdf {
+    height: 10px;
+    width: 10px;
+  }
+
+  .mobile-pdf-fallback {
+    display: block;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+  }
+
+  .mobile-pdf-fallback a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 1024px)  {
+
+  .frame.desktop-pdf {
+    display: block !important;
+    width: 100% !important;
+    height: 650px !important;
+    min-width: 300px;
+    min-height: 400px;
+  }
+  .mobile-pdf-fallback {
+    display: none !important;
+  }
+}
+
 
 </style>
