@@ -87,7 +87,7 @@ const closeModal = () => {
   }
   
   .modal-body {
-    padding: 0;
+    padding: 1.5rem;
   }
   
   @media (max-width: 640px) {

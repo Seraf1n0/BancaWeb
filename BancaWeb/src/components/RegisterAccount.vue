@@ -6,8 +6,7 @@ import { useRouter } from 'vue-router'
 import CardModal from './CardModal.vue'
 import CustomAlert from './CustomAlert.vue'
 const showTermsModal = ref(false)
-const pdfUrl = '/TCBancoPrometedores.pdf' 
-
+const pdfUrl = '/TCBancoPrometedores.pdf'
 
 const customAlert = ref({
   show: false,
@@ -308,7 +307,14 @@ const isValidUsername = computed(() => {
     gap: 1rem;
 }
 
+.frame::-webkit-scrollbar {
+  display: none;
+}
 
+.frame {
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
 
 .wrap label {
   color: white;
@@ -446,6 +452,28 @@ const isValidUsername = computed(() => {
 
 .submit-btn:hover {
   background-color: #45a049;
+}
+
+/* Eliminar scrollbar del navegador cuando el modal está abierto */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Ajustar el contenedor del PDF para evitar scrollbars adicionales */
+.pdf-container {
+  overflow: hidden;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Ajustar el iframe para evitar scrollbars */
+.frame {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
 @media (max-width: 480px) {
