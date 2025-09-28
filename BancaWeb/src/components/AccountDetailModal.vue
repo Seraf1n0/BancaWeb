@@ -77,7 +77,7 @@
 
         <div v-else-if="filteredMovements.length === 0" class="state-container empty">
           <p class="state-message">
-            {{ movements.length === 0 ? 'No hay movimientos registrados' : 'No se encontraron movimientos con los filtros aplicados' }}
+            {{ emptyMovementsMessage }}
           </p>
           <button v-if="hasActiveFilters" class="clear-filters-btn" @click="clearFilters" type="button">
             Limpiar filtros
@@ -144,6 +144,8 @@ const emit = defineEmits<{
   close: []
 }>()
 
+
+
 // Estados
 const movements = ref<Movement[]>([])
 const isLoading = ref(false)
@@ -158,6 +160,16 @@ const filters = ref<MovementFilters>({
 })
 
 // Computed properties
+const emptyMovementsMessage = computed(() => {
+  if (movements.value.length === 0) {
+    return 'No hay movimientos registrados'
+  }
+  if (filteredMovements.value.length === 0) {
+    return 'No se encontraron movimientos con los filtros aplicados'
+  }
+  return ''
+})
+
 const currencySymbol = computed(() => {
   return props.account?.moneda === 'USD' ? '$' : '₡'
 })
