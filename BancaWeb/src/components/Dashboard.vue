@@ -85,6 +85,9 @@
     <!-- Transfer Modal -->
     <TransferModal :show="showTransferModal" :transfer-data="pendingTransfer" :accounts="accounts"
       :is-processing="isProcessingTransfer" @close="handleCloseTransferModal" @confirm="handleConfirmTransfer" />
+
+    <!-- Account Detail Modal -->
+    <AccountDetailModal :show="showAccountDetailModal" :account="selectedAccount" @close="handleCloseAccountDetail" />
   </div>
 </template>
 
@@ -95,15 +98,18 @@ import CardSection from '../components/CardSection.vue'
 import TransfersSection from './TransfersSection.vue'
 import TransferForm from './TransferForm.vue'
 import TransferModal from './TransferModal.vue'
+import AccountDetailModal from './AccountDetailModal.vue'
 
 export default {
   name: 'Dashboard',
   components: {
     AccountSection,
     AccountCard,
+    CardSection,
     TransfersSection,
     TransferForm,
-    TransferModal
+    TransferModal,
+    AccountDetailModal
   },
   data() {
     return {
@@ -177,7 +183,9 @@ export default {
       transferType: "propias",
       showTransferModal: false,
       pendingTransfer: null,
-      isProcessingTransfer: false
+      isProcessingTransfer: false,
+      showAccountDetailModal: false,
+      selectedAccount: null
     }
   },
   computed: {
@@ -215,7 +223,9 @@ export default {
       return titles[section] || 'Dashboard'
     },
     handleViewDetails(accountId) {
-      console.log('detalles de cuenta: ', accountId)
+      console.log('Detalles de cuenta:', accountId)
+      this.selectedAccount = this.accounts.find(acc => acc.account_id === accountId)
+      this.showAccountDetailModal = true
     },
     handleSubmitTransfer(transferData) {
       this.pendingTransfer = transferData
@@ -240,6 +250,10 @@ export default {
         this.showTransferModal = false
         this.pendingTransfer = null
       }
+    },
+    handleCloseAccountDetail() {
+      this.showAccountDetailModal = false
+      this.selectedAccount = null
     }
   }
 }
