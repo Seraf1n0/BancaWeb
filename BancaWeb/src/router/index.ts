@@ -35,7 +35,35 @@ const routes: RouteRecordRaw[] = [
             title: 'Panel - Mi Banca',
             requiresAuth: true
         }
+    },
+    {
+        path: '/loginForm',
+        name: 'loginform',
+        component: () => import('../components/LoginPage.vue'),
+        meta: {
+            title: 'Inicio de sesión',
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/password-recovery',
+        name: 'passwordrecovery',
+        component: () => import('../components/PasswordRecovery.vue'),
+        meta: {
+            title: 'Recuperación de contraseña',
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/register',
+        name: 'registeraccount',
+        component: () => import('../components/RegisterAccount.vue'),
+        meta: {
+            title: 'Creación de cuenta',
+            requiresAuth: true
+        }
     }
+
 ]
 
 const router = createRouter({
