@@ -62,6 +62,13 @@ const submitData = () => {
 
 
 
+const rigthPassword = computed(() => {
+  const value = firstPassword.value;
+  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return value && !pattern.test(value);
+});
+
+
 
 const isAdult = computed(() => {
   if (!dateBirth.value) return true;
@@ -256,6 +263,12 @@ const isValidUsername = computed(() => {
             minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" placeholder="Escriba la contraseña">            
             <input id="password2" type="password" v-model="secondPassword" required class="input-field" 
             minlength="8" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" placeholder="Escriba otra vez su contraseña">
+
+            <div v-if="rigthPassword" class="error-message">
+            La contraseña debe tener minimo 8 caracteres, una mayuscula, una minuscula y digito.
+            </div>
+
+¿
 
             <div v-if="secondPassword && !samePassword" class="error-message">
             Las contraseñas no coinciden.
