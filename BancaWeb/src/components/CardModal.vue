@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const emit = defineEmits(["close"])
+const emit = defineEmits(['close'])
 
 const closeModal = () => {
   emit('close')
@@ -7,12 +7,17 @@ const closeModal = () => {
 </script>
 
 <template>
-  <div class="modal-backdrop" @click.self="closeModal" role="dialog" aria-modal="true"
-    aria-labelledby="card-modal-title">
+  <div
+    class="modal-backdrop"
+    @click.self="closeModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="card-modal-title"
+  >
     <div class="modal" @click.stop>
       <div class="modal-header">
         <h2 id="card-modal-title" class="modal-title">
-          <slot name="title">Detalles de Tarjeta</slot>
+          <slot name="title"></slot>
         </h2>
         <button class="close-btn" @click="closeModal" aria-label="Cerrar modal" type="button">
           ×
@@ -40,12 +45,12 @@ const closeModal = () => {
 }
 
 .modal {
-  background: #2d2d2d;
-  border: 1px solid #404040;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   width: 100%;
   max-width: 900px;
-  color: #ffffff;
+  color: var(--text-primary);
   margin: auto 0;
   min-height: fit-content;
 }
@@ -55,45 +60,45 @@ const closeModal = () => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-    border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-on-hover);
+}
+
+.close-btn:focus {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.modal-body {
+  padding: 0;
+}
+
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 1rem 0.5rem;
+    align-items: flex-start;
   }
-  
-  .modal-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #ffffff;
-  }
-  
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #b0b0b0;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-  }
-  
-  .close-btn:hover {
-    background-color: #404040;
-    color: #ffffff;
-  }
-  
-  .close-btn:focus {
-    outline: 2px solid #0066cc;
-    outline-offset: 2px;
-  }
-  
-  .modal-body {
-    padding: 0;
-  }
-  
-  @media (max-width: 640px) {
-    .modal-backdrop {
-      padding: 1rem 0.5rem;
-      align-items: flex-start;
-    }
-  }
+}
 </style>

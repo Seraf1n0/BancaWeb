@@ -5,23 +5,42 @@
       <p class="form-subtitle">{{ formSubtitle }}</p>
     </div>
 
-    <form class="transfer-form" @submit.prevent="submitForm" role="form" aria-labelledby="form-title">
+    <form
+      class="transfer-form"
+      @submit.prevent="submitForm"
+      role="form"
+      aria-labelledby="form-title"
+    >
       <!-- Cuenta origen (comun entre tipos) -->
       <div class="form-group">
         <label for="origen" class="form-label">Cuenta origen *</label>
-        <select id="origen" v-model="form.origen" class="form-select" required aria-describedby="origen-help">
+        <select
+          id="origen"
+          v-model="form.origen"
+          class="form-select"
+          required
+          aria-describedby="origen-help"
+        >
           <option disabled value="">Seleccione una cuenta</option>
           <option v-for="acc in accounts" :key="acc.account_id" :value="acc.account_id">
             {{ acc.alias }} - ****{{ acc.account_id.slice(-4) }} ({{ acc.moneda }})
           </option>
         </select>
-        <small id="origen-help" class="form-help">Selecciona la cuenta desde la que transferirás</small>
+        <small id="origen-help" class="form-help"
+          >Selecciona la cuenta desde la que transferirás</small
+        >
       </div>
 
       <!-- vista condicional para tipos -->
       <div v-if="transferType === 'propias'" class="form-group">
         <label for="destino-select" class="form-label">Cuenta destino *</label>
-        <select id="destino-select" v-model="form.destino" class="form-select" required aria-describedby="destino-help">
+        <select
+          id="destino-select"
+          v-model="form.destino"
+          class="form-select"
+          required
+          aria-describedby="destino-help"
+        >
           <option disabled value="">Seleccione cuenta destino</option>
           <option v-for="acc in ownDestinyAccounts" :key="acc.account_id" :value="acc.account_id">
             {{ acc.alias }} - ****{{ acc.account_id.slice(-4) }} ({{ acc.moneda }})
@@ -33,9 +52,16 @@
       <!-- vista condicional para tipos -->
       <div v-else-if="transferType === 'terceros'" class="form-group">
         <label for="destino-input" class="form-label">Número de cuenta destino *</label>
-        <input id="destino-input" type="text" v-model="form.destino" class="form-input"
-          placeholder="CR01-XXXX-XXXX-XXXXXXXXXXXX" required pattern="CR\d{2}-\d{4}-\d{4}-\d{12}"
-          aria-describedby="destino-tercero-help" />
+        <input
+          id="destino-input"
+          type="text"
+          v-model="form.destino"
+          class="form-input"
+          placeholder="CR01-XXXX-XXXX-XXXXXXXXXXXX"
+          required
+          pattern="CR\d{2}-\d{4}-\d{4}-\d{12}"
+          aria-describedby="destino-tercero-help"
+        />
         <small id="destino-tercero-help" class="form-help">
           Formato: CR01-XXXX-XXXX-XXXXXXXXXXXX
         </small>
@@ -43,7 +69,13 @@
 
       <div class="form-group">
         <label for="moneda" class="form-label">Moneda *</label>
-        <select id="moneda" v-model="form.moneda" class="form-select" required aria-describedby="moneda-help">
+        <select
+          id="moneda"
+          v-model="form.moneda"
+          class="form-select"
+          required
+          aria-describedby="moneda-help"
+        >
           <option :value="originCurrency">{{ currencyLabel(originCurrency) }}</option>
           <option v-if="originCurrency !== 'USD'" value="USD">Dólares Americanos (USD)</option>
           <option v-if="originCurrency !== 'CRC'" value="CRC">Colones Costarricenses (CRC)</option>
@@ -55,32 +87,46 @@
         <label for="monto" class="form-label">Monto *</label>
         <div class="input-group">
           <span class="input-prefix">{{ currencySymbol }}</span>
-          <input id="monto" type="number" step="0.01" min="1" :max="maxAmount" v-model.number="form.monto"
-            class="form-input" required aria-describedby="monto-help" placeholder="0.00" />
+          <input
+            id="monto"
+            type="number"
+            step="0.01"
+            min="1"
+            :max="maxAmount"
+            v-model.number="form.monto"
+            class="form-input"
+            required
+            aria-describedby="monto-help"
+            placeholder="0.00"
+          />
         </div>
         <small id="monto-help" class="form-help">
           Monto mínimo: {{ currencySymbol }}1.00
-          <span v-if="maxAmount"> | Máximo disponible: {{ currencySymbol }}{{ formatAmount(maxAmount)
-            }}</span>
+          <span v-if="maxAmount">
+            | Máximo disponible: {{ currencySymbol }}{{ formatAmount(maxAmount) }}</span
+          >
         </small>
       </div>
 
       <div class="form-group">
         <label for="descripcion" class="form-label">Descripción</label>
-        <input id="descripcion" type="text" v-model="form.descripcion" class="form-input" maxlength="255"
-          placeholder="Concepto de la transferencia (opcional)" aria-describedby="descripcion-help" />
+        <input
+          id="descripcion"
+          type="text"
+          v-model="form.descripcion"
+          class="form-input"
+          maxlength="255"
+          placeholder="Concepto de la transferencia (opcional)"
+          aria-describedby="descripcion-help"
+        />
         <small id="descripcion-help" class="form-help">
           {{ form.descripcion.length }}/255 caracteres
         </small>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn btn-secondary" @click="resetForm">
-          Limpiar
-        </button>
-        <button type="submit" class="btn btn-primary" :disabled="!isFormValid">
-          Continuar
-        </button>
+        <button type="button" class="btn btn-secondary" @click="resetForm">Limpiar</button>
+        <button type="submit" class="btn btn-primary" :disabled="!isFormValid">Continuar</button>
       </div>
     </form>
   </div>
@@ -107,7 +153,7 @@ const form = reactive({
   destino: '',
   moneda: '',
   monto: null as number | null,
-  descripcion: ''
+  descripcion: '',
 })
 
 // Computed properties
@@ -124,11 +170,11 @@ const formSubtitle = computed(() => {
 })
 
 const ownDestinyAccounts = computed(() => {
-  return props.accounts.filter(a => a.account_id !== form.origen)
+  return props.accounts.filter((acc) => acc.account_id !== form.origen)
 })
 
 const originAccount = computed(() => {
-  return props.accounts.find(a => a.account_id === form.origen)
+  return props.accounts.find((acc) => acc.account_id === form.origen)
 })
 
 const originCurrency = computed(() => {
@@ -144,8 +190,14 @@ const currencySymbol = computed(() => {
 })
 
 const isFormValid = computed(() => {
-  return form.origen && form.destino && form.moneda &&
-    form.monto && form.monto > 0 && form.monto <= maxAmount.value
+  return (
+    form.origen &&
+    form.destino &&
+    form.moneda &&
+    form.monto &&
+    form.monto > 0 &&
+    form.monto <= maxAmount.value
+  )
 })
 
 // Methods
@@ -156,7 +208,7 @@ const currencyLabel = (currency: string) => {
 const formatAmount = (amount: number) => {
   return new Intl.NumberFormat('es-CR', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(amount)
 }
 
@@ -165,7 +217,7 @@ const submitForm = () => {
     emit('submit-transfer', {
       ...form,
       tipo: props.transferType,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
   }
 }
@@ -176,24 +228,30 @@ const resetForm = () => {
     destino: '',
     moneda: '',
     monto: null,
-    descripcion: ''
+    descripcion: '',
   })
 }
 
 // Watchers
-watch(() => form.origen, (newOrigen) => {
-  if (newOrigen && !form.moneda) {
-    form.moneda = originCurrency.value
-  }
-  // se resetea el destino si cambia a propias
-  if (props.transferType === 'propias') {
-    form.destino = ''
-  }
-})
+watch(
+  () => form.origen,
+  (newOrigen) => {
+    if (newOrigen && !form.moneda) {
+      form.moneda = originCurrency.value
+    }
+    // se resetea el destino si cambia a propias
+    if (props.transferType === 'propias') {
+      form.destino = ''
+    }
+  },
+)
 
-watch(() => props.transferType, () => {
-  resetForm()
-})
+watch(
+  () => props.transferType,
+  () => {
+    resetForm()
+  },
+)
 </script>
 
 <style scoped>
@@ -204,20 +262,20 @@ watch(() => props.transferType, () => {
 .form-header {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .form-title {
   margin: 0 0 0.5rem 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .form-subtitle {
   margin: 0;
   font-size: 0.875rem;
-  color: #b0b0b0;
+  color: var(--text-secondary);
 }
 
 .transfer-form {
@@ -235,16 +293,16 @@ watch(() => props.transferType, () => {
 .form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .form-input,
 .form-select {
   padding: 0.75rem;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   font-size: 0.9rem;
   transition: border-color 0.2s ease;
 }
@@ -252,12 +310,12 @@ watch(() => props.transferType, () => {
 .form-input:focus,
 .form-select:focus {
   outline: none;
-  border-color: #0066cc;
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
 }
 
 .form-input::placeholder {
-  color: #808080;
+  color: var(--text-muted);
 }
 
 .input-group {
@@ -269,7 +327,7 @@ watch(() => props.transferType, () => {
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #b0b0b0;
+  color: var(--text-muted);
   font-size: 0.9rem;
   pointer-events: none;
 }
@@ -280,7 +338,7 @@ watch(() => props.transferType, () => {
 
 .form-help {
   font-size: 0.75rem;
-  color: #808080;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -308,28 +366,28 @@ watch(() => props.transferType, () => {
 }
 
 .btn-primary {
-  background-color: #0066cc;
-  color: #ffffff;
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0052a3;
+  background-color: var(--accent-hover);
 }
 
 .btn-secondary {
   background-color: transparent;
-  color: #b0b0b0;
-  border: 1px solid #404040;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
 }
 
 .btn-secondary:hover {
-  background-color: #404040;
-  color: #ffffff;
-  border-color: #606060;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
 }
 
 .btn:focus {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 

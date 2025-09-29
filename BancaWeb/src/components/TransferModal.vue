@@ -1,12 +1,16 @@
 <template>
-  <div v-if="show" class="modal-overlay" @click="closeModal" role="dialog" aria-modal="true"
-    aria-labelledby="transfer-modal-title">
+  <div
+    v-if="show"
+    class="modal-overlay"
+    @click="closeModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="transfer-modal-title"
+  >
     <div class="modal-content" @click.stop>
       <!-- Header -->
       <header class="modal-header">
-        <h3 id="transfer-modal-title" class="modal-title">
-          Confirmar Transferencia
-        </h3>
+        <h3 id="transfer-modal-title" class="modal-title">Confirmar Transferencia</h3>
         <button class="modal-close" @click="closeModal" aria-label="Cerrar modal de confirmación">
           ×
         </button>
@@ -60,10 +64,20 @@
 
       <!-- Action footer -->
       <footer class="modal-footer">
-        <button class="btn btn-secondary" @click="closeModal" :disabled="isProcessing" type="button">
+        <button
+          class="btn btn-secondary"
+          @click="closeModal"
+          :disabled="isProcessing"
+          type="button"
+        >
           Cancelar
         </button>
-        <button class="btn btn-primary" @click="confirmTransfer" :disabled="isProcessing" type="button">
+        <button
+          class="btn btn-primary"
+          @click="confirmTransfer"
+          :disabled="isProcessing"
+          type="button"
+        >
           {{ isProcessing ? 'Procesando...' : 'Confirmar Transferencia' }}
         </button>
       </footer>
@@ -85,8 +99,8 @@ const props = defineProps<{
 
 // Emits
 const emit = defineEmits<{
-  'close': []
-  'confirm': [data: any]
+  close: []
+  confirm: [data: any]
 }>()
 
 // Computed properties
@@ -97,13 +111,13 @@ const transferTypeLabel = computed(() => {
 })
 
 const originAccountLabel = computed(() => {
-  const account = props.accounts.find(a => a.account_id === props.transferData?.origen)
+  const account = props.accounts.find((a) => a.account_id === props.transferData?.origen)
   return account ? `${account.alias} - ****${account.account_id.slice(-4)}` : 'N/A'
 })
 
 const destinationAccountLabel = computed(() => {
   if (props.transferData?.tipo === 'propias') {
-    const account = props.accounts.find(a => a.account_id === props.transferData?.destino)
+    const account = props.accounts.find((a) => a.account_id === props.transferData?.destino)
     return account ? `${account.alias} - ****${account.account_id.slice(-4)}` : 'N/A'
   } else {
     // Para terceros, mostrar el número de cuenta ingresado
@@ -120,11 +134,11 @@ const formattedDateTime = computed(() => {
   const date = now.toLocaleDateString('es-CR', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   })
   const time = now.toLocaleTimeString('es-CR', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
   return `${date} ${time}`
 })
@@ -133,7 +147,7 @@ const formattedDateTime = computed(() => {
 const formatAmount = (amount: number) => {
   return new Intl.NumberFormat('es-CR', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(amount)
 }
 
@@ -164,8 +178,8 @@ const confirmTransfer = () => {
 }
 
 .modal-content {
-  background-color: #2d2d2d;
-  border: 1px solid #404040;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
@@ -173,7 +187,7 @@ const confirmTransfer = () => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-modal);
 }
 
 /* Header */
@@ -182,7 +196,7 @@ const confirmTransfer = () => {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 1.5rem 0 1.5rem;
-  border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--border-secondary);
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
 }
@@ -191,30 +205,31 @@ const confirmTransfer = () => {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .modal-close {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .modal-close:hover {
-  color: #ffffff;
-  background-color: #404040;
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
 }
 
 .modal-close:focus {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
-
 
 .modal-body {
   padding: 0 1.5rem;
@@ -225,7 +240,7 @@ const confirmTransfer = () => {
   margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .summary-items {
@@ -239,25 +254,25 @@ const confirmTransfer = () => {
   justify-content: space-between;
   align-items: flex-start;
   padding: 0.75rem;
-  background-color: #1a1a1a;
+  background-color: var(--bg-secondary);
   border-radius: 6px;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-secondary);
 }
 
 .summary-item.highlight {
-  border-color: #0066cc;
+  border-color: var(--accent-primary);
   background-color: rgba(0, 102, 204, 0.1);
 }
 
 .summary-label {
   font-size: 0.875rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .summary-value {
   font-size: 0.875rem;
-  color: #ffffff;
+  color: var(--text-primary);
   text-align: right;
   max-width: 60%;
   word-break: break-word;
@@ -266,7 +281,7 @@ const confirmTransfer = () => {
 .summary-value.amount {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #22c55e;
+  color: var(--success);
 }
 
 /* Processing state */
@@ -277,16 +292,16 @@ const confirmTransfer = () => {
   gap: 1rem;
   padding: 1.5rem;
   margin-top: 1rem;
-  background-color: #1a1a1a;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-secondary);
 }
 
 .loading-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid #404040;
-  border-top: 2px solid #0066cc;
+  border: 2px solid var(--border-secondary);
+  border-top: 2px solid var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -303,13 +318,13 @@ const confirmTransfer = () => {
 
 .processing-text {
   margin: 0;
-  color: #b0b0b0;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 
 .modal-footer {
   padding: 1.5rem;
-  border-top: 1px solid #404040;
+  border-top: 1px solid var(--border-secondary);
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
@@ -333,28 +348,28 @@ const confirmTransfer = () => {
 }
 
 .btn-primary {
-  background-color: #0066cc;
-  color: #ffffff;
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0052a3;
+  background-color: var(--accent-hover);
 }
 
 .btn-secondary {
   background-color: transparent;
-  color: #b0b0b0;
-  border: 1px solid #404040;
+  color: var(--text-muted);
+  border: 1px solid var(--border-secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: #404040;
-  color: #ffffff;
-  border-color: #606060;
+  background-color: var(--border-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-secondary);
 }
 
 .btn:focus {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--accent-primary) s;
   outline-offset: 2px;
 }
 

@@ -144,8 +144,6 @@ const emit = defineEmits<{
   close: []
 }>()
 
-
-
 // Estados
 const movements = ref<Movement[]>([])
 const isLoading = ref(false)
@@ -337,12 +335,12 @@ watch(
 }
 
 .modal {
-  background: #2d2d2d;
-  border: 1px solid #404040;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   width: 100%;
   max-width: 900px;
-  color: #ffffff;
+  color: var(--text-primary);
   margin: auto 0;
   min-height: fit-content;
 }
@@ -352,21 +350,21 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .modal-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -374,8 +372,8 @@ watch(
 }
 
 .close-btn:hover {
-  background-color: #404040;
-  color: #ffffff;
+  background-color: var(--accent-hover);
+  color: var(--text-primary);
 }
 
 /* Secciones */
@@ -383,7 +381,7 @@ watch(
 .filters-section,
 .movements-section {
   padding: 1.5rem;
-  border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .movements-section {
@@ -395,7 +393,7 @@ watch(
   margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -403,7 +401,7 @@ watch(
 
 .movements-count {
   font-size: 0.875rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
   font-weight: 400;
 }
 
@@ -419,24 +417,24 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  background-color: #1a1a1a;
+  background-color: var(--bg-primary);
   border-radius: 6px;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-primary);
 }
 
 .detail-item.highlight {
-  border-color: #0066cc;
+  border-color: var(--accent-hover);
   background-color: rgba(0, 102, 204, 0.1);
 }
 
 .detail-label {
   font-size: 0.875rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
 }
 
 .detail-value {
   font-size: 0.875rem;
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -479,22 +477,22 @@ watch(
 .filter-select,
 .filter-input {
   padding: 0.75rem;
-  background-color: #1a1a1a;
-  border: 1px solid #404040;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.875rem;
 }
 
 .filter-select:focus,
 .filter-input:focus {
-  outline: 2px solid #0066cc;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
-  border-color: #0066cc;
+  border-color: var(--accent-primary);
 }
 
 .filter-input::placeholder {
-  color: #808080;
+  color: var(--text-muted);
 }
 
 /* Estados */
@@ -505,25 +503,25 @@ watch(
   justify-content: center;
   padding: 3rem 2rem;
   text-align: center;
-  background-color: #1a1a1a;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-primary);
 }
 
 .state-container.error {
-  border-color: #ef4444;
+  border-color: var(--error);
   background-color: rgba(239, 68, 68, 0.1);
 }
 
 .state-container.empty {
-  border: 1px dashed #404040;
+  border: 1px dashed var(--border-primary);
 }
 
 .loading-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #404040;
-  border-top: 3px solid #0066cc;
+  border: 3px solid var(--border-primary);
+  border-top: 3px solid var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -541,7 +539,7 @@ watch(
 
 .state-message {
   margin: 0;
-  color: #b0b0b0;
+  color: var(--text-muted);
   font-size: 1rem;
 }
 
@@ -549,8 +547,8 @@ watch(
 .clear-filters-btn {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background-color: #0066cc;
-  color: #ffffff;
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -560,7 +558,7 @@ watch(
 
 .retry-btn:hover,
 .clear-filters-btn:hover {
-  background-color: #0052a3;
+  background-color: var(--accent-hover);
 }
 
 /* Lista de movimientos */
@@ -572,16 +570,16 @@ watch(
 }
 
 .movement-item {
-  background-color: #1a1a1a;
-  border: 1px solid #404040;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.2s ease;
 }
 
 .movement-item:hover {
-  border-color: #606060;
-  background-color: #252525;
+  border-color: var(--border-secondary);
+  background-color: var(--bg-secondary);
 }
 
 .movement-header {
@@ -620,13 +618,13 @@ watch(
 
 .type-text {
   font-size: 0.75rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
   text-transform: capitalize;
 }
 
 .movement-date {
   font-size: 0.75rem;
-  color: #808080;
+  color: var(--text-muted);
 }
 
 .movement-content {
@@ -675,14 +673,14 @@ watch(
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid #404040;
+  border-top: 1px solid var(--border-primary);
   margin-top: 1rem;
 }
 
 .pagination-btn {
   padding: 0.5rem 1rem;
-  background-color: #404040;
-  color: #ffffff;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -691,7 +689,7 @@ watch(
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: #606060;
+  background-color: var(--bg-tertiary);
 }
 
 .pagination-btn:disabled {
@@ -701,7 +699,7 @@ watch(
 
 .pagination-info {
   font-size: 0.875rem;
-  color: #b0b0b0;
+  color: var(--text-muted);
 }
 
 /* Responsive */
