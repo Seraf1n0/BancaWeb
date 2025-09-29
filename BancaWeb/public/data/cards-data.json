@@ -1,0 +1,35 @@
+[
+    {
+    "type": "Gold",
+    "number": "1111222233334444",
+    "valid": "12/26",
+    "owner": "Paulo Gonzales Maradona",
+    "pin": "1234",
+    "cvv": "999",
+    "currency": "USD",
+    "limit": 5000,
+    "balance": 1500
+    },
+    {
+        "type": "Platinum",
+        "number": "5555666677778888",
+        "valid": "06/29",
+        "owner": "Benito Montes Lackwood",
+        "pin": "4321",
+        "cvv": "888",
+        "currency": "CRC",
+        "limit": 10000,
+        "balance": 2000
+    },
+    {
+        "type": "Black",
+        "number": "9999000011112222",
+        "valid": "01/30",
+        "owner": "Neymar Santos Junior",
+        "pin": "0000",
+        "cvv": "777",
+        "currency": "USD",
+        "limit": 20000,
+        "balance": 7500
+    }
+]

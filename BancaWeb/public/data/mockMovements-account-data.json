@@ -1,0 +1,82 @@
+[
+  {
+    "id": "mov001",
+    "account_id": "123456789",
+    "date": "2025-09-28T10:00:00Z",
+    "type": "COMPRA",
+    "description": "Pago de servicios públicos",
+    "currency": "CRC",
+    "amount": -500000,
+    "balance": 1000000
+  },
+  {
+    "id": "mov002",
+    "account_id": "123456789",
+    "date": "2025-09-27T15:30:00Z",
+    "type": "DEPOSITO",
+    "description": "Depósito de nómina",
+    "currency": "CRC",
+    "amount": 25000,
+    "balance": 975000
+  },
+  {
+    "id": "mov003",
+    "account_id": "123456789",
+    "date": "2025-09-26T09:15:00Z",
+    "type": "RETIRO",
+    "description": "Transferencia recibida",
+    "currency": "CRC",
+    "amount": -100000,
+    "balance": 875000
+  },
+  {
+    "id": "mov004",
+    "account_id": "987654321",
+    "date": "2025-09-28T11:00:00Z",
+    "type": "COMPRA",
+    "description": "Compra en supermercado",
+    "currency": "USD",
+    "amount": 1200,
+    "balance": 3000
+  },
+  {
+    "id": "mov005",
+    "account_id": "987654321",
+    "date": "2025-09-27T14:00:00Z",
+    "type": "RETIRO",
+    "description": "Retiro en cajero automático",
+    "currency": "USD",
+    "amount": -150,
+    "balance": 1800
+  },
+  {
+    "id": "mov006",
+    "account_id": "987654321",
+    "date": "2025-09-25T16:45:00Z",
+    "type": "COMPRA",
+    "description": "Pago de tarjeta de crédito",
+    "currency": "USD",
+    "amount": -300,
+    "balance": 1950
+  },
+  {
+    "id": "mov007",
+    "account_id": "123456789",
+    "date": "2025-09-24T12:30:00Z",
+    "type": "DEPOSITO",
+    "description": "Transferencia enviada",
+    "currency": "CRC",
+    "amount": -45000,
+    "balance": 830000
+  },
+  {
+    "id": "mov008",
+    "account_id": "987654321",
+    "date": "2025-09-24T10:00:00Z",
+    "type": "DEPOSITO",
+    "description": "Depósito en efectivo",
+    "currency": "USD",
+    "amount": -75,
+    "balance": 2250
+  }
+]

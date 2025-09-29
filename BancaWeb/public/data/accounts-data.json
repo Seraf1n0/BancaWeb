@@ -1,0 +1,66 @@
+[
+    {
+        "account_id": "CR-001-12345",
+        "alias": "Cuenta Nómina",
+        "tipo": "Ahorros",
+        "moneda": "CRC",
+        "saldo": 250000
+
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400
+    }
+]

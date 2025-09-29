@@ -68,8 +68,8 @@ const submitData = () => {
   border-radius: 5px;
   height: auto;
 }
-.btn-login {
-  background-color: var(--su);
+.btn-login{
+  background-color: #4CAF50;
   color: white;
   padding: 10px;
   border: none;
@@ -81,5 +81,37 @@ const submitData = () => {
 
 .btn-login:hover {
   background-color: #45a049;
+}
+
+@media (max-width: 479px) {
+  .login-form {
+    width: 80%;
+  }
+  .form-group{
+    text-align: center;
+  }
+
+
+}
+
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .login-form {
+    width: 50%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .login-form {
+    width: 45%; 
+  }
+}
+
+
+
+@media (min-width: 1024px) {
+  .login-form {
+    width: 35%; 
+  }
 }
 </style>
