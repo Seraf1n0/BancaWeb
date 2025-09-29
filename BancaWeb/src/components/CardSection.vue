@@ -333,75 +333,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted} from 'vue'
 import Card from './CreditCard.vue'
 import Modal from './CardModal.vue'
 
-const cards = [
-  {
-    type: 'Gold',
-    number: '1111222233334444',
-    valid: '12/26',
-    owner: 'Paulo Gonzales Maradona',
-    pin: '1234',
-    cvv: '999',
-    currency: 'USD',
-    limit: 5000,
-    balance: 1500,
-  },
-  {
-    type: 'Platinum',
-    number: '5555666677778888',
-    valid: '06/29',
-    owner: 'Benito Montes Lackwood',
-    pin: '4321',
-    cvv: '888',
-    currency: 'CRC',
-    limit: 10000,
-    balance: 2000,
-  },
-  {
-    type: 'Black',
-    number: '9999000011112222',
-    valid: '01/30',
-    owner: 'Neymar Santos Junior',
-    pin: '0000',
-    cvv: '777',
-    currency: 'USD',
-    limit: 20000,
-    balance: 7500,
-  },
-]
+const cards = ref<Card[]>([]);
+onMounted(async () => {
+  try {
+    const response = await fetch('/data/cards-data.json');
+    if (!response.ok) {
+      throw new Error('Error al cargar el archivo JSON');
+    }
+    cards.value = await response.json();
+  } catch (error) {
+    console.error('Error al cargar los datos de las tarjetas:', error);
+  }
+});
 
-const movements = [
-  {
-    id: 'mov001',
-    card_id: '1111222233334444',
-    date: '2025-09-25T12:00:00Z',
-    type: 'COMPRA',
-    description: 'Pago servicios',
-    currency: 'USD',
-    amount: 200.5,
-  },
-  {
-    id: 'mov002',
-    card_id: '1111222233334444',
-    date: '2025-09-24T08:30:00Z',
-    type: 'PAGO',
-    description: 'Depósito nómina',
-    currency: 'USD',
-    amount: 1500.0,
-  },
-  {
-    id: 'mov003',
-    card_id: '5555666677778888',
-    date: '2025-09-20T10:15:00Z',
-    type: 'COMPRA',
-    description: 'Supermercado',
-    currency: 'CRC',
-    amount: 35000.75,
-  },
-]
+
+const movements = ref<Movement[]>([]);
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/data/cardsMovements-data.json');
+    if (!response.ok) {
+      throw new Error('Error al cargar el archivo JSON');
+    }
+    movements.value = await response.json();
+  } catch (error) {
+    console.error('Error al cargar los datos de los movimientos:', error);
+  }
+});
+
+
 
 // Estados del carrusel
 const index = ref(0)
@@ -502,7 +466,7 @@ const hasActiveMovementFilters = computed(() => {
 
 // Funciones del carrusel
 function nextCard() {
-  if (index.value < cards.length - 1) {
+  if (index.value < cards.value.length - 1) {
     index.value++
   }
 }
@@ -558,7 +522,7 @@ const loadCardMovements = async () => {
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    cardMovements.value = movements.filter((m) => m.card_id === selectedCard.value!.number)
+    cardMovements.value = movements.value.filter((m) => m.card_id === selectedCard.value!.number)
   } catch (error) {
     hasMovementsError.value = true
     console.error('Error loading movements:', error)

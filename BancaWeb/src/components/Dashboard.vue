@@ -165,6 +165,7 @@ import TransferForm from './TransferForm.vue'
 import TransferModal from './TransferModal.vue'
 import AccountDetailModal from './AccountDetailModal.vue'
 import ThemeToggle from './ThemeToggle.vue'
+import { onMounted, ref } from 'vue'
 
 interface Account {
   account_id: string
@@ -200,86 +201,32 @@ export default {
     return {
       isMenuOpen: false as boolean,
       activeSection: 'accounts' as 'accounts' | 'cards' | 'transfers',
-      accounts: [
-        {
-          account_id: 'CR-001-12345',
-          alias: 'Cuenta Nómina',
-          tipo: 'Ahorro',
-          moneda: 'CRC',
-          saldo: 250000,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54322',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54323',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54324',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54321',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54322',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54325',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-54326',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-        {
-          account_id: 'US-009-543217',
-          alias: 'Cuenta Dólares',
-          tipo: 'Corriente',
-          moneda: 'USD',
-          saldo: 400,
-          propietario: 'USER-001',
-        },
-      ] as Account[],
+      accounts: [] as Account[],
       transferType: 'propias' as string,
       showTransferModal: false as boolean,
       pendingTransfer: null as TransferData | null,
       isProcessingTransfer: false as boolean,
       showAccountDetailModal: false as boolean,
       selectedAccount: null as Account | null,
+    }
+  },
+  setup() {
+    const accounts = ref<Account[]>([])
+
+    onMounted(async () => {
+      try {
+        const response = await fetch('/data/dashboardAccount.json')
+        if (!response.ok) {
+          throw new Error('Failed to fetch accounts data')
+        }
+        accounts.value = await response.json()
+      } catch (error) {
+        console.error('Error loading accounts:', error)
+      }
+    })
+
+    return {
+      accounts,
     }
   },
   computed: {

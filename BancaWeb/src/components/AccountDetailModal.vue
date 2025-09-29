@@ -129,8 +129,9 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { Account, Movement, MovementFilters } from '../types'
 
 // Props
@@ -227,6 +228,19 @@ const formatDate = (dateString: string) => {
   })
 }
 
+const mapMovementType = (type: string): 'CREDITO' | 'DEBITO' => {
+  // Los DEPOSITOS son credito 
+  if (type === 'DEPOSITO') {
+    return 'CREDITO'
+  }
+  
+  if (type === 'COMPRA' || type === 'RETIRO' || type === 'PAGO') {
+    return 'DEBITO'
+  }
+  return 'DEBITO'
+}
+
+
 const loadMovements = async () => {
   if (!props.account) return
 
@@ -234,11 +248,30 @@ const loadMovements = async () => {
   hasError.value = false
 
   try {
-    // Simular carga de datos
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Datos simulados de movimientos
-    movements.value = generateMockMovements(props.account.account_id)
+    const response = await fetch('/data/mockMovements-account-data.json')
+    if (!response.ok) {
+      throw new Error(`Error al cargar el archivo JSON: ${response.status}`)
+    }
+    
+    const allMovements = await response.json()
+    
+    // Filtrar por account_id y mapear los campos
+    const filteredAndMappedMovements = allMovements
+      .filter((movement: any) => movement.account_id === props.account?.account_id)
+      .map((movement: any) => ({
+        id: movement.id,
+        account_id: movement.account_id,
+        fecha: movement.date,
+        tipo: mapMovementType(movement.type),
+        descripcion: movement.description,
+        moneda: movement.currency,
+        monto: Math.abs(movement.amount),
+        saldo: movement.balance
+      }))
+      .sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+    
+    movements.value = filteredAndMappedMovements
+    
   } catch (error) {
     hasError.value = true
     console.error('Error loading movements:', error)
@@ -247,42 +280,6 @@ const loadMovements = async () => {
   }
 }
 
-const generateMockMovements = (accountId: string): Movement[] => {
-  const mockMovements: Movement[] = []
-  const descriptions = [
-    'Pago de servicios públicos',
-    'Depósito de nómina',
-    'Transferencia recibida',
-    'Compra en supermercado',
-    'Retiro en cajero automático',
-    'Pago de tarjeta de crédito',
-    'Transferencia enviada',
-    'Depósito en efectivo',
-  ]
-
-  let currentBalance = props.account?.saldo || 0
-
-  for (let i = 0; i < 25; i++) {
-    const isCredit = Math.random() > 0.6
-    const amount = Math.floor(Math.random() * 50000) + 1000
-    const finalAmount = isCredit ? amount : -amount
-
-    currentBalance -= finalAmount // Calculamos hacia atrás
-
-    mockMovements.unshift({
-      id: `TXN-${Date.now()}-${i}`,
-      account_id: accountId,
-      fecha: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-      tipo: isCredit ? 'CREDITO' : 'DEBITO',
-      descripcion: descriptions[Math.floor(Math.random() * descriptions.length)],
-      moneda: props.account?.moneda || 'CRC',
-      monto: amount,
-      saldo: currentBalance + finalAmount,
-    })
-  }
-
-  return mockMovements
-}
 
 const applyFilters = () => {
   currentPage.value = 1
@@ -305,7 +302,7 @@ watch(
   () => props.show,
   (newShow) => {
     if (newShow && props.account) {
-      loadMovements()
+      loadMovements() // Cargar datos reales
       currentPage.value = 1
       clearFilters()
     }
@@ -335,12 +332,12 @@ watch(
 }
 
 .modal {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
+  background: #2d2d2d;
+  border: 1px solid #404040;
   border-radius: 12px;
   width: 100%;
   max-width: 900px;
-  color: var(--text-primary);
+  color: #ffffff;
   margin: auto 0;
   min-height: fit-content;
 }
@@ -350,21 +347,21 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-secondary);
+  border-bottom: 1px solid #404040;
 }
 
 .modal-title {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-muted);
+  color: #b0b0b0;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -372,8 +369,8 @@ watch(
 }
 
 .close-btn:hover {
-  background-color: var(--accent-hover);
-  color: var(--text-primary);
+  background-color: #404040;
+  color: #ffffff;
 }
 
 /* Secciones */
@@ -381,7 +378,7 @@ watch(
 .filters-section,
 .movements-section {
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-secondary);
+  border-bottom: 1px solid #404040;
 }
 
 .movements-section {
@@ -393,7 +390,7 @@ watch(
   margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -401,7 +398,7 @@ watch(
 
 .movements-count {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #b0b0b0;
   font-weight: 400;
 }
 
@@ -417,24 +414,24 @@ watch(
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  background-color: var(--bg-primary);
+  background-color: #1a1a1a;
   border-radius: 6px;
-  border: 1px solid var(--border-primary);
+  border: 1px solid #404040;
 }
 
 .detail-item.highlight {
-  border-color: var(--accent-hover);
+  border-color: #0066cc;
   background-color: rgba(0, 102, 204, 0.1);
 }
 
 .detail-label {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #b0b0b0;
 }
 
 .detail-value {
   font-size: 0.875rem;
-  color: var(--text-primary);
+  color: #ffffff;
   font-weight: 500;
 }
 
@@ -477,22 +474,22 @@ watch(
 .filter-select,
 .filter-input {
   padding: 0.75rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+  background-color: #1a1a1a;
+  border: 1px solid #404040;
   border-radius: 6px;
-  color: var(--text-primary);
+  color: #ffffff;
   font-size: 0.875rem;
 }
 
 .filter-select:focus,
 .filter-input:focus {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid #0066cc;
   outline-offset: 2px;
-  border-color: var(--accent-primary);
+  border-color: #0066cc;
 }
 
 .filter-input::placeholder {
-  color: var(--text-muted);
+  color: #808080;
 }
 
 /* Estados */
@@ -503,25 +500,25 @@ watch(
   justify-content: center;
   padding: 3rem 2rem;
   text-align: center;
-  background-color: var(--bg-secondary);
+  background-color: #1a1a1a;
   border-radius: 8px;
-  border: 1px solid var(--border-primary);
+  border: 1px solid #404040;
 }
 
 .state-container.error {
-  border-color: var(--error);
+  border-color: #ef4444;
   background-color: rgba(239, 68, 68, 0.1);
 }
 
 .state-container.empty {
-  border: 1px dashed var(--border-primary);
+  border: 1px dashed #404040;
 }
 
 .loading-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--border-primary);
-  border-top: 3px solid var(--accent-primary);
+  border: 3px solid #404040;
+  border-top: 3px solid #0066cc;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -539,7 +536,7 @@ watch(
 
 .state-message {
   margin: 0;
-  color: var(--text-muted);
+  color: #b0b0b0;
   font-size: 1rem;
 }
 
@@ -547,8 +544,8 @@ watch(
 .clear-filters-btn {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--accent-primary);
-  color: var(--text-primary);
+  background-color: #0066cc;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -558,7 +555,7 @@ watch(
 
 .retry-btn:hover,
 .clear-filters-btn:hover {
-  background-color: var(--accent-hover);
+  background-color: #0052a3;
 }
 
 /* Lista de movimientos */
@@ -570,16 +567,16 @@ watch(
 }
 
 .movement-item {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
+  background-color: #1a1a1a;
+  border: 1px solid #404040;
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.2s ease;
 }
 
 .movement-item:hover {
-  border-color: var(--border-secondary);
-  background-color: var(--bg-secondary);
+  border-color: #606060;
+  background-color: #252525;
 }
 
 .movement-header {
@@ -618,13 +615,13 @@ watch(
 
 .type-text {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #b0b0b0;
   text-transform: capitalize;
 }
 
 .movement-date {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: #808080;
 }
 
 .movement-content {
@@ -673,14 +670,14 @@ watch(
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  border-top: 1px solid var(--border-primary);
+  border-top: 1px solid #404040;
   margin-top: 1rem;
 }
 
 .pagination-btn {
   padding: 0.5rem 1rem;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background-color: #404040;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -689,7 +686,7 @@ watch(
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: var(--bg-tertiary);
+  background-color: #606060;
 }
 
 .pagination-btn:disabled {
@@ -699,7 +696,7 @@ watch(
 
 .pagination-info {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: #b0b0b0;
 }
 
 /* Responsive */

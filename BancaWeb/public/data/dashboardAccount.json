@@ -1,0 +1,74 @@
+[
+    {
+        "account_id": "CR-001-12345",
+        "alias": "Cuenta Nómina",
+        "tipo": "Ahorro",
+        "moneda": "CRC",
+        "saldo": 250000,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54322",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54323",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54324",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54321",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54322",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54325",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-54326",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    },
+    {
+        "account_id": "US-009-543217",
+        "alias": "Cuenta Dólares",
+        "tipo": "Corriente",
+        "moneda": "USD",
+        "saldo": 400,
+        "propietario": "USER-001"
+    }
+]
