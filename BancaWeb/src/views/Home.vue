@@ -2,6 +2,7 @@
     <div class="home-container">
         <section class="welcome-section" role="banner" aria-labelledby="welcome-title">
             <div class="welcome-content">
+                <!-- <img src="/prometedoresLogo.png" alt="Logo de Banca Prometedores" class="welcome-logo" /> -->
                 <h1 id="welcome-title" class="welcome-title">
                     Bienvenido a Banca Prometedores
                 </h1>
@@ -60,6 +61,12 @@ onMounted(() => {
     transition: color 0.3s ease;
 }
 
+.welcome-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
 @media (min-width: 768px) {
     .welcome-section {
         padding: 3rem 2rem;
@@ -72,11 +79,19 @@ onMounted(() => {
     .welcome-subtitle {
         font-size: 1.125rem;
     }
+
+    .welcome-logo {
+        width: 150px;
+    }
 }
 
 @media (min-width: 1024px) {
     .welcome-title {
         font-size: 2.5rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.25rem;
     }
 }
 </style>

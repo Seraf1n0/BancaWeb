@@ -7,7 +7,7 @@ const Home = () => import('../views/Home.vue')
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        redirect: '/home'
+        redirect: '/loginForm'
     },
     {
         path: '/home',
