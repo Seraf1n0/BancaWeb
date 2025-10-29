@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "rmuv9M31vGw+bLqkllw3SdS4ohuCRNlcix3lv7kWLuc=",
+  "Source": "APIBanca",
+  "BasePath": "_content/APIBanca",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
