@@ -29,3 +29,5 @@ coverage
 
 *.tsbuildinfo
 bin/Debug/.net/
+bin/
+obj/
