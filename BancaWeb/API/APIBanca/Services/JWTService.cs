@@ -12,14 +12,14 @@ public class JwtService
         _config = config;
     }
 
-    public string GenerateToken(string username, int rol)
+    public string GenerateToken(string userId, int rol)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username),
+            new Claim("userId", userId), 
             new Claim("sessionId", Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Role, rol.ToString()) 
         };
