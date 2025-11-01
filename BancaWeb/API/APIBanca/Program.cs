@@ -29,6 +29,9 @@ builder.Services.AddHttpClient<UpdateUserRepository>();
 builder.Services.AddScoped<UpdateUserRepository>();
 builder.Services.AddScoped<UpdateUserService>();
 
+builder.Services.AddHttpClient<DeleteUserRepository>();
+builder.Services.AddScoped<DeleteUserRepository>();
+builder.Services.AddScoped<DeleteUserService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
