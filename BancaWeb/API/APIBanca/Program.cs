@@ -33,6 +33,11 @@ builder.Services.AddHttpClient<DeleteUserRepository>();
 builder.Services.AddScoped<DeleteUserRepository>();
 builder.Services.AddScoped<DeleteUserService>();
 
+
+builder.Services.AddHttpClient<CreateCardRepository>();
+builder.Services.AddScoped<CreateCardService>();
+builder.Services.AddScoped<CreateCardRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
