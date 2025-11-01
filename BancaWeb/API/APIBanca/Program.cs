@@ -25,6 +25,11 @@ builder.Services.AddSingleton<ApiKeyGeneratorService>();
 builder.Services.AddHttpClient<ApiKeyRepository>();
 builder.Services.AddScoped<ApiKeyRepository>();
 
+builder.Services.AddHttpClient<UpdateUserRepository>();
+builder.Services.AddScoped<UpdateUserRepository>();
+builder.Services.AddScoped<UpdateUserService>();
+
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
