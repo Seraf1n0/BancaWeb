@@ -14,11 +14,12 @@ using System.Text.Json;
 public class CreatedCardController : ControllerBase
 {
     private readonly CreateCardService _service;
+    private readonly EncryptionProtect _encryptionProtect;
 
-
-    public CreatedCardController(CreateCardService service)
+    public CreatedCardController(CreateCardService service, EncryptionProtect encryptionProtect)
     {
         _service = service;
+        _encryptionProtect = encryptionProtect;
     }
 
 

@@ -60,7 +60,7 @@ namespace APIBanca.Services
             var root = doc.RootElement;
             if (root.ValueKind == JsonValueKind.Array)
             {
-¿                var firstElement = root[0];
+                var firstElement = root[0];
                 return firstElement.GetProperty("card_id").GetGuid();
             }
             else
