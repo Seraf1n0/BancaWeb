@@ -38,8 +38,8 @@ namespace APIBanca.Services
             };
 
             var jsonBody = JsonSerializer.Serialize(body);
-Console.WriteLine("JSON enviado a Supabase:");
-Console.WriteLine(jsonBody);
+            Console.WriteLine("JSON enviado a Supabase:");
+            Console.WriteLine(jsonBody);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -60,13 +60,11 @@ Console.WriteLine(jsonBody);
             var root = doc.RootElement;
             if (root.ValueKind == JsonValueKind.Array)
             {
-                // Si es un array, toma el primer elemento
-                var firstElement = root[0];
+¿                var firstElement = root[0];
                 return firstElement.GetProperty("card_id").GetGuid();
             }
             else
             {
-                // Si es objeto directo
                 return root.GetProperty("card_id").GetGuid();
             }
         }

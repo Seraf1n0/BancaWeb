@@ -50,16 +50,10 @@ public class CreatedCardController : ControllerBase
         Console.WriteLine($"ERROR SUPABASE: {ex.Message}");
         return StatusCode(502, new { error = ex.Message });
     }
-    catch (JsonException ex)
-    {
-        Console.WriteLine($"ERROR JSON: {ex.Message}");
-        return StatusCode(500, new { error = "Error procesando respuesta de Supabase" });
-    }
     catch (Exception ex)
     {
-        Console.WriteLine($"ERROR: {ex.Message}");
-        Console.WriteLine($"STACK TRACE: {ex.StackTrace}");
-        return StatusCode(500, "Error interno del servidor.");
+        Console.WriteLine($"ERROR INTERNO: {ex.Message}");
+        return StatusCode(500, new { error = "Error interno del servidor." });
     }
     }
 }
