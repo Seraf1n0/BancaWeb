@@ -64,6 +64,10 @@ builder.Services.AddHttpClient<OtpConsumeRepository>();
 builder.Services.AddScoped<OtpConsumeService>();
 builder.Services.AddScoped<OtpConsumeRepository>();
 
+builder.Services.AddHttpClient<BankValidateRepository>();
+builder.Services.AddScoped<BankValidateService>();
+builder.Services.AddScoped<BankValidateRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
