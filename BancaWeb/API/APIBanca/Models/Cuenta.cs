@@ -23,10 +23,10 @@ namespace APIBanca.Models
         [Required] public Guid usuario_id { get; set; }
         [Required, StringLength(34, MinimumLength = 8)] public string iban { get; set; } = "";
         [Required, StringLength(100)] public string alias { get; set; } = "";
-        [Required] public int tipo { get; set; }
-        [Required] public int moneda { get; set; }
+        [Required] public Guid tipo { get; set; }
+        [Required] public Guid moneda { get; set; }
         [Required, Range(0, double.MaxValue)] public decimal saldo_inicial { get; set; }
-        [Required] public int estado { get; set; }
+        [Required] public Guid estado { get; set; }
     }
 
     // Modelo para actualizar el estado de una cuenta
