@@ -4,13 +4,13 @@ using APIBanca.Models;
 
 namespace APIBanca.Repositories
 {
-    public class GetAccountMovements
+    public class GetAccountMovementsRepository
     {
         private readonly HttpClient _httpClient;
         private readonly string _supabaseUrl;
         private readonly string _supabaseKey;
 
-        public GetAccountMovements(HttpClient httpClient, IConfiguration configuration)
+        public GetAccountMovementsRepository(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _supabaseUrl = configuration["Supabase:Url"];

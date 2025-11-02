@@ -1,4 +1,5 @@
 using APIBanca.Models;
+using APIBanca.Repositories;
 
 namespace APIBanca.Services
 {
