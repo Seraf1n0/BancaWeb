@@ -21,19 +21,19 @@ namespace APIBanca.Repositories
         }
 
         // Método de creación de cuenta
-        public async Task<Cuenta> CreateAccountAsync(CreateCuenta newAccount)
+        public async Task<Guid> CreateAccountAsync(CreateCuenta newAccount)
         {
             var url = $"{_supabaseUrl}/rest/v1/rpc/sp_create_account";
 
             var body = new
             {
-                usuario_id = newAccount.usuario_id,
-                iban = newAccount.iban,
-                alias = newAccount.alias,
-                tipo = newAccount.tipo,
-                moneda = newAccount.moneda,
-                saldo_inicial = newAccount.saldo_inicial,
-                estado = newAccount.estado
+                p_usuario_id = newAccount.usuario_id,
+                p_iban = newAccount.iban,
+                p_alias = newAccount.alias,
+                p_tipo = newAccount.tipo,
+                p_moneda = newAccount.moneda,
+                p_saldo_inicial = newAccount.saldo_inicial,
+                p_estado = newAccount.estado
             };
 
             var jsonBody = JsonSerializer.Serialize(body);
@@ -63,11 +63,10 @@ namespace APIBanca.Repositories
                 if (doc.RootElement.TryGetProperty("account_id", out var idProp))
                 {
                     // Intentamos devolver el GUID
-                    return Guid.TryParse(idProp.GetString(), out var accountId)
-                        ? new Cuenta { id = accountId }
-                        : throw new Exception("El ID de la cuenta no es un GUID válido.");
+                    return Guid.Parse(idProp.GetString() ?? "");
                 }
             }
+            throw new Exception("No se pudo obtener el ID de la cuenta creada.");
         }
     }
 }
