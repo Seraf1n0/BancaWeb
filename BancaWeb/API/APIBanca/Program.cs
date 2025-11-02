@@ -45,6 +45,25 @@ builder.Services.AddHttpClient<GetCardRepository>();
 builder.Services.AddScoped<GetCardService>();
 builder.Services.AddScoped<GetCardRepository>();
 
+
+builder.Services.AddHttpClient<CardMovementRepository>();
+builder.Services.AddScoped<CardMovementService>();
+builder.Services.AddScoped<CardMovementRepository>();
+
+builder.Services.AddHttpClient<GetCardMovementRepository>();
+builder.Services.AddScoped<GetCardMovementService>();
+builder.Services.AddScoped<GetCardMovementRepository>();
+
+
+builder.Services.AddHttpClient<OtpCreateRepository>();
+builder.Services.AddScoped<OtpCreateService>();
+builder.Services.AddScoped<OtpCreateRepository>();
+
+
+builder.Services.AddHttpClient<OtpConsumeRepository>();
+builder.Services.AddScoped<OtpConsumeService>();
+builder.Services.AddScoped<OtpConsumeRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
