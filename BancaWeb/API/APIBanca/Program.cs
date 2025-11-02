@@ -59,6 +59,11 @@ builder.Services.AddHttpClient<OtpCreateRepository>();
 builder.Services.AddScoped<OtpCreateService>();
 builder.Services.AddScoped<OtpCreateRepository>();
 
+
+builder.Services.AddHttpClient<OtpConsumeRepository>();
+builder.Services.AddScoped<OtpConsumeService>();
+builder.Services.AddScoped<OtpConsumeRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
