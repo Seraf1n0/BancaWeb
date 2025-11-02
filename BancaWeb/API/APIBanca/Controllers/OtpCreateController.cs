@@ -13,10 +13,12 @@ using System.Security.Claims;
 public class OtpCreateController : ControllerBase
 {
     private readonly OtpCreateService _service;
+    private readonly EncryptionProtect _encryptionProtect;
 
-    public OtpCreateController(OtpCreateService service)
+    public OtpCreateController(OtpCreateService service, EncryptionProtect encryptionProtect)
     {
         _service = service;
+        _encryptionProtect = encryptionProtect;
     }
 
     [HttpPost]
@@ -31,6 +33,11 @@ public class OtpCreateController : ControllerBase
             }
             var jwtRol = User.FindFirst(ClaimTypes.Role)?.Value;
             Console.WriteLine($"ROL DEL JWT: {jwtRol}");
+            var otpOriginal = otp.codigo_hash;
+            var contrasenaEncrypt =  _encryptionProtect.Encrypt(otp.codigo_hash);
+            Console.WriteLine($"Código original: {otpOriginal}");
+            Console.WriteLine($"Código encriptado: {contrasenaEncrypt}");
+            otp.codigo_hash = contrasenaEncrypt;
             otp.usuario_id = card_id;
 
             Console.WriteLine($"card ID RECIBIDO: {card_id}");
@@ -39,7 +46,7 @@ public class OtpCreateController : ControllerBase
             if (consulta == null)
                 return BadRequest("No se pudo obtener la consulta.");
 
-            return Ok(consulta);
+            return Ok($"Otp ID: {consulta}, Este es su otp: {otpOriginal}");
         } catch(Exception ex) {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }

@@ -13,10 +13,12 @@ using System.Security.Claims;
 public class OtpConsumeController : ControllerBase
 {
     private readonly OtpConsumeService _service;
+    private readonly EncryptionProtect _encryptionProtect;
 
-    public OtpConsumeController(OtpConsumeService service)
+    public OtpConsumeController(OtpConsumeService service, EncryptionProtect encryptionProtect)
     {
         _service = service;
+        _encryptionProtect = encryptionProtect;
     }
 
     [HttpPost]
@@ -33,13 +35,18 @@ public class OtpConsumeController : ControllerBase
             Console.WriteLine($"ROL DEL JWT: {jwtRol}");
             otp.user_id = card_id;
 
+            var otpOriginal = otp.codigo_hash;
+            var contrasenaEncrypt =  _encryptionProtect.Encrypt(otp.codigo_hash);
+            otp.codigo_hash = contrasenaEncrypt;
+            Console.WriteLine($"Código OTP original: {otpOriginal}");
+            Console.WriteLine($"Código OTP encriptado: {contrasenaEncrypt}");
             Console.WriteLine($"card ID RECIBIDO: {card_id}");
             var consulta = await _service.OtpConsume(otp);
 
             if (consulta == null)
                 return BadRequest("No se pudo obtener la consulta.");
 
-            return Ok(consulta);
+            return Ok($"El otp fue consumido: {consulta}");
         } catch(Exception ex) {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
