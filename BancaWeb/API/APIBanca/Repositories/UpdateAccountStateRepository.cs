@@ -19,16 +19,16 @@ namespace APIBanca.Repositories
             _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
         }
 
-        public async Task<bool> ActualizarEstadoCuenta(string idCuenta, int nuevoEstado)
+        public async Task<bool> ActualizarEstadoCuenta(UpdateEstadoCuenta updateEstadoCuenta)
         {
-            if (string.IsNullOrWhiteSpace(idCuenta))
+            if (string.IsNullOrWhiteSpace(updateEstadoCuenta.idCuenta))
             {
                 Console.WriteLine("ERROR: TIENE QUE ENVIAR LA IDENTIFICACION DE LA CUENTA.");
                 return false;
             }
             var url = $"{_supabaseUrl}/rest/v1/rpc/sp_update_account_state";
 
-            var body = new { p_account_id = idCuenta, p_nuevo_estado = nuevoEstado };
+            var body = new { p_account_id = updateEstadoCuenta.idCuenta, p_nuevo_estado = updateEstadoCuenta.nuevoEstado };
 
             var request = new HttpRequestMessage(HttpMethod.Post, url)
             {

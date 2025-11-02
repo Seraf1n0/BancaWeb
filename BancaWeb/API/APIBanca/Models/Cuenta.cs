@@ -32,7 +32,8 @@ namespace APIBanca.Models
     // Modelo para actualizar el estado de una cuenta
     public class UpdateEstadoCuenta
     {
-        [Required] public int nuevo_estado { get; set; }
+        [Required] public string idCuenta { get; set; } = "";
+        [Required] public int nuevoEstado { get; set; }
     }
 
     // Modelo para paginación
