@@ -11,6 +11,8 @@ builder.Services.AddHttpClient<AuthUsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<JwtService>();
+builder.Services.AddSingleton<EncryptionProtect>();
+
 builder.Services.AddHttpClient<UserRepository>();
 builder.Services.AddScoped<CreateUserService>();
 
@@ -32,6 +34,16 @@ builder.Services.AddScoped<UpdateUserService>();
 builder.Services.AddHttpClient<DeleteUserRepository>();
 builder.Services.AddScoped<DeleteUserRepository>();
 builder.Services.AddScoped<DeleteUserService>();
+
+
+builder.Services.AddHttpClient<CreateCardRepository>();
+builder.Services.AddScoped<CreateCardService>();
+builder.Services.AddScoped<CreateCardRepository>();
+
+
+builder.Services.AddHttpClient<GetCardRepository>();
+builder.Services.AddScoped<GetCardService>();
+builder.Services.AddScoped<GetCardRepository>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
