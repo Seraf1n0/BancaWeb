@@ -50,6 +50,10 @@ builder.Services.AddHttpClient<CardMovementRepository>();
 builder.Services.AddScoped<CardMovementService>();
 builder.Services.AddScoped<CardMovementRepository>();
 
+builder.Services.AddHttpClient<GetCardMovementRepository>();
+builder.Services.AddScoped<GetCardMovementService>();
+builder.Services.AddScoped<GetCardMovementRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
