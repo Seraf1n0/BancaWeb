@@ -45,5 +45,16 @@ namespace APIBanca.Models
         public int page_size { get; init; }
     }
 
-    public class MovimientoPage : PagedResult<JsonElement> { }
+    public class Movimiento
+    {
+        public Guid id { get; set; }
+        public Guid cuenta_id { get; set; }
+        public DateTime fecha_movimiento { get; set; }
+        public Guid tipo { get; set; }
+        public string descripcion { get; set; } = "";
+        public Guid moneda { get; set; }
+        public decimal monto { get; set; }
+    }
+
+    public class MovimientoPage : PagedResult<Movimiento> { }
 }
