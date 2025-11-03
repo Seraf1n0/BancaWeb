@@ -1,0 +1,20 @@
+using APIBanca.Models;
+using APIBanca.Repositories;
+
+namespace APIBanca.Services
+{
+    public class GetAccountMovementsService
+    {
+        private readonly GetAccountMovementsRepository _repository;
+
+        public GetAccountMovementsService(GetAccountMovementsRepository repository){
+            _repository = repository;
+        }
+
+        public async Task<MovimientoPage> AccountMovements(string? account_id, DateTime? start_date, DateTime? to_date, string type,
+                string? q, int page, int pageSize)
+        {
+            return await _repository.AccountMovements(account_id, start_date, to_date, type, q, page, pageSize);
+        }
+    }
+}
