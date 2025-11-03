@@ -49,3 +49,7 @@ C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\obj\Debug\net9
 C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\obj\Debug\net9.0\APIBanca.pdb
 C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\obj\Debug\net9.0\APIBanca.genruntimeconfig.cache
 C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\obj\Debug\net9.0\ref\APIBanca.dll
+C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\bryan\Documents\2proyeWeb\BancaWeb\BancaWeb\API\APIBanca\bin\Debug\net9.0\BCrypt.Net-Next.dll

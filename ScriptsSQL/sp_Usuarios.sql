@@ -57,15 +57,15 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION sp_users_get_by_identification(
-    p_identificacion VARCHAR
+    p_identificacion text
 )
 RETURNS TABLE (
     id UUID,
-    nombre VARCHAR,
-    apellido VARCHAR,
-    correo VARCHAR,
-    usuario VARCHAR,
-    rol int
+    nombre text,
+    apellido text,
+    correo text,
+    usuario text,
+    rol smallint
 )
 LANGUAGE plpgsql
 AS $$
@@ -82,6 +82,8 @@ BEGIN
     WHERE u.identificacion = p_identificacion;
 END;
 $$;
+
+
 
 CREATE OR REPLACE FUNCTION sp_api_key_create(
     p_api_hash VARCHAR,
@@ -125,11 +127,11 @@ $$;
 
 CREATE OR REPLACE FUNCTION sp_users_update(
     p_user_id UUID,
-    p_nombre VARCHAR DEFAULT NULL,
-    p_apellido VARCHAR DEFAULT NULL,
-    p_correo VARCHAR DEFAULT NULL,
-    p_usuario VARCHAR DEFAULT NULL,
-    p_rol int DEFAULT NULL,
+    p_nombre text DEFAULT NULL,
+    p_apellido text DEFAULT NULL,
+    p_correo text DEFAULT NULL,
+    p_usuario text DEFAULT NULL,
+    p_rol smallint DEFAULT NULL,
     OUT updated BOOLEAN
 )
 LANGUAGE plpgsql
@@ -170,6 +172,7 @@ $$;
 
 
 
+
 CREATE OR REPLACE FUNCTION sp_users_delete(
     p_user_id UUID,
     OUT deleted BOOLEAN
@@ -184,21 +187,20 @@ BEGIN
     END IF;
     
     -- Delete on cascade 
-    DELETE FROM Otps WHERE usuario_id = p_user_id;
+    DELETE FROM "Otps" WHERE usuario_id = p_user_id;
     
-    DELETE FROM movimientoTarjeta 
+    DELETE FROM "movimientoTarjeta" 
     WHERE cuenta_id IN (SELECT id FROM tarjeta WHERE usuario_id = p_user_id);
     
-    DELETE FROM tarjeta WHERE usuario_id = p_user_id;
+    DELETE FROM "tarjeta" WHERE usuario_id = p_user_id;
     
-    DELETE FROM movimientoCuenta 
+    DELETE FROM "movimientoCuenta" 
     WHERE cuenta_id IN (SELECT id FROM cuenta WHERE usuario_id = p_user_id);
     
-    DELETE FROM cuenta WHERE usuario_id = p_user_id;
+    DELETE FROM "cuenta" WHERE usuario_id = p_user_id;
     
-    DELETE FROM usuario WHERE id = p_user_id;
+    DELETE FROM "usuario" WHERE id = p_user_id;
     
     deleted := TRUE;
 END;
 $$;
-

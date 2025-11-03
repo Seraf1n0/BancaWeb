@@ -3,9 +3,9 @@ CREATE OR REPLACE FUNCTION sp_accounts_create(
     p_usuario_id UUID,
     p_iban VARCHAR,
     p_alias VARCHAR,
-    p_tipo int,
-    p_moneda int,
-    p_saldo_inicial DECIMAL(18,2),
+    p_tipo UUID,
+    p_moneda UUID,
+    p_saldo_inicial FLOAT,
     p_estado UUID DEFAULT NULL,
     OUT account_id UUID
 )
@@ -27,13 +27,13 @@ BEGIN
     
     -- Estado: activo
     DECLARE
-        v_estado_final UUID := COALESCE(p_estado, (SELECT id FROM estadoCuenta WHERE nombre = 'Activa'));
+        v_estado_final UUID := COALESCE(p_estado, (SELECT id FROM "estadoCuenta" WHERE nombre = 'Activa'));
     BEGIN
         INSERT INTO cuenta (
             usuario_id,
             iban,
             alias,
-            tipoCuenta,
+            "tipoCuenta",
             moneda,
             saldo,
             estado,
@@ -54,7 +54,7 @@ BEGIN
         
         -- movimiento de apertura
         IF p_saldo_inicial > 0 THEN
-            INSERT INTO movimientoCuenta (
+            INSERT INTO "movimientoCuenta" (
                 cuenta_id,
                 fecha,
                 tipo,
@@ -64,7 +64,7 @@ BEGIN
             ) VALUES (
                 account_id,
                 NOW(),
-                (SELECT id FROM tipoMovimientoCuenta WHERE nombre = 'Crédito'),
+                (SELECT id FROM "tipoMovimientoCuenta" WHERE nombre = 'Crédito'),
                 'Apertura de cuenta - Saldo inicial',
                 p_moneda,
                 p_saldo_inicial
@@ -74,62 +74,62 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION sp_accounts_get(
-    p_owner_id UUID DEFAULT NULL,
-    p_account_id UUID DEFAULT NULL
+create or replace function public.sp_accounts_get(
+    p_owner_id uuid default null,
+    p_account_id uuid default null
 )
-RETURNS TABLE (
-    id UUID,
-    usuario_id UUID,
-    iban VARCHAR,
-    alias VARCHAR,
-    tipoCuenta int,
-    moneda int,
-    saldo DECIMAL(18,2),
-    estado int,
-    fecha_creacion TIMESTAMP,
-    fecha_actualizacion TIMESTAMP,
-    nombre_tipo_cuenta VARCHAR,
-    nombre_moneda VARCHAR,
-    nombre_estado VARCHAR
+returns table (
+    id uuid,
+    usuario_id uuid,
+    iban varchar,
+    alias varchar,
+    "tipoCuenta" uuid,
+    moneda uuid,
+    saldo numeric(18,2),
+    estado uuid,
+    fecha_creacion timestamp,
+    fecha_actualizacion timestamp,
+    nombre_tipo_cuenta varchar,
+    nombre_moneda varchar,
+    nombre_estado varchar
 )
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
+language plpgsql
+as $$
+begin
+    return query
+    select
         c.id,
         c.usuario_id,
-        c.iban,
-        c.alias,
-        c.tipoCuenta,
+        c.iban::varchar,
+        c.alias::varchar,
+        c."tipoCuenta",
         c.moneda,
-        c.saldo,
+        c.saldo::numeric(18,2),
         c.estado,
-        c.fecha_creacion,
-        c.fecha_actualizacion,
-        tc.nombre as nombre_tipo_cuenta,
-        m.nombre as nombre_moneda,
-        ec.nombre as nombre_estado
-    FROM cuenta c
-    LEFT JOIN tipoCuenta tc ON c.tipoCuenta = tc.id
-    LEFT JOIN moneda m ON c.moneda = m.id
-    LEFT JOIN estadoCuenta ec ON c.estado = ec.id
-    WHERE (p_owner_id IS NOT NULL AND c.usuario_id = p_owner_id)
-       OR (p_account_id IS NOT NULL AND c.id = p_account_id);
-END;
+        c.fecha_creacion::timestamp,
+        c.fecha_actualizacion::timestamp,
+        tc.nombre::varchar as nombre_tipo_cuenta,
+        m.nombre::varchar  as nombre_moneda,
+        ec.nombre::varchar as nombre_estado
+    from public.cuenta c
+    left join public."tipoCuenta"    tc on c."tipoCuenta" = tc.id
+    left join public.moneda          m  on c.moneda = m.id
+    left join public."estadoCuenta"  ec on c.estado = ec.id
+    where (p_owner_id  is null or c.usuario_id = p_owner_id)
+      and (p_account_id is null or c.id = p_account_id);
+end;
 $$;
 
 CREATE OR REPLACE FUNCTION sp_accounts_set_status(
     p_account_id UUID,
-    p_nuevo_estado int,
+    p_nuevo_estado UUID,
     OUT updated BOOLEAN
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_saldo_actual DECIMAL(18,2);
-    v_estado_actual int;
+    v_estado_actual UUID;
     v_nombre_estado VARCHAR;
 BEGIN
     updated := FALSE;
@@ -145,7 +145,7 @@ BEGIN
     
     -- Nombre para el nuevo estado
     SELECT nombre INTO v_nombre_estado
-    FROM estadoCuenta 
+    FROM "estadoCuenta" 
     WHERE id = p_nuevo_estado;
     
     IF NOT FOUND THEN

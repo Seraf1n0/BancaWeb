@@ -1,4 +1,4 @@
-using System.Text.Json;
+using APIBanca.Models;
 
 namespace APIBanca.Services
 {
@@ -11,9 +11,24 @@ namespace APIBanca.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<bool> ValidarUsuario(string username, string password)
+        public async Task<UserAuthResponse?> ValidarUsuario(string usernameOrEmail, string password)
         {
-            return await _usuarioRepository.ValidarCredencialesAsync(username, password);
+            var usuario = await _usuarioRepository.ObtenerUsuarioPorUsernameOEmailAsync(usernameOrEmail);
+            
+            if (usuario == null)
+            {
+                return null; 
+            }
+
+
+            bool passwordValida = password == usuario.ContrasenaHash;
+
+            if (!passwordValida)
+            {
+                return null; 
+            }
+
+            return usuario;
         }
     }
 }
