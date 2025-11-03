@@ -75,6 +75,24 @@ builder.Services.AddHttpClient<OtpConsumeRepository>();
 builder.Services.AddScoped<OtpConsumeService>();
 builder.Services.AddScoped<OtpConsumeRepository>();
 
+builder.Services.AddHttpClient<BankValidateRepository>();
+builder.Services.AddScoped<BankValidateService>();
+builder.Services.AddScoped<BankValidateRepository>();
+
+builder.Services.AddHttpClient<ForgotPasswordRepository>();
+builder.Services.AddScoped<ForgotPasswordService>();
+builder.Services.AddScoped<ForgotPasswordRepository>();
+
+
+builder.Services.AddHttpClient<VerifyOtpRepository>();
+builder.Services.AddScoped<VerifyOtpService>();
+builder.Services.AddScoped<VerifyOtpRepository>();
+
+
+builder.Services.AddHttpClient<ResetPasswordRepository>();
+builder.Services.AddScoped<ResetPasswordService>();
+builder.Services.AddScoped<ResetPasswordRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
