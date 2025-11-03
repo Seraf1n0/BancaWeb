@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION sp_transfer_create_internal(
     p_from_account_id UUID,
     p_to_account_id UUID,
     p_amount DECIMAL(18,2),
-    p_currency int,
+    p_currency UUID,
     p_descripcion VARCHAR,
     p_user_id UUID,
     OUT transfer_id UUID,
@@ -53,11 +53,11 @@ BEGIN
         RAISE EXCEPTION 'No tiene permisos para transferir desde esta cuenta';
     END IF;
     
-    IF v_cuenta_origen.estado != (SELECT id FROM estadoCuenta WHERE nombre = 'Activa') THEN
+    IF v_cuenta_origen.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'Activa') THEN
         RAISE EXCEPTION 'La cuenta de origen no está activa';
     END IF;
     
-    IF v_cuenta_destino.estado != (SELECT id FROM estadoCuenta WHERE nombre = 'Activa') THEN
+    IF v_cuenta_destino.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'Activa') THEN
         RAISE EXCEPTION 'La cuenta de destino no está activa';
     END IF;
     
@@ -74,8 +74,8 @@ BEGIN
                         v_cuenta_origen.saldo, p_amount;
     END IF;
     
-    SELECT id INTO v_tipo_debito FROM tipoMovimientoCuenta WHERE nombre = 'Débito';
-    SELECT id INTO v_tipo_credito FROM tipoMovimientoCuenta WHERE nombre = 'Crédito';
+    SELECT id INTO v_tipo_debito FROM "tipoMovimientoCuenta" WHERE nombre = 'Débito';
+    SELECT id INTO v_tipo_credito FROM "tipoMovimientoCuenta" WHERE nombre = 'Crédito';
     
     v_nuevo_saldo_origen := v_cuenta_origen.saldo - p_amount;
     v_nuevo_saldo_destino := v_cuenta_destino.saldo + p_amount;
@@ -86,7 +86,7 @@ BEGIN
     SET saldo = v_nuevo_saldo_origen, fecha_actualizacion = NOW()
     WHERE id = p_from_account_id;
     
-    INSERT INTO movimientoCuenta (
+    INSERT INTO "movimientoCuenta" (
         cuenta_id,
         fecha,
         tipo,
@@ -109,7 +109,7 @@ BEGIN
     SET saldo = v_nuevo_saldo_destino, fecha_actualizacion = NOW()
     WHERE id = p_to_account_id;
     
-    INSERT INTO movimientoCuenta (
+    INSERT INTO "movimientoCuenta" (
         cuenta_id,
         fecha,
         tipo,
@@ -151,26 +151,26 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION sp_bank_validate_account(
-    p_iban VARCHAR
+    p_iban text
 )
 RETURNS TABLE (
     acc_exists BOOLEAN,
-    owner_name VARCHAR,
+    owner_name text,
     owner_id UUID
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_owner_name VARCHAR;
+    v_owner_name text;
     v_owner_id UUID;
 BEGIN
     SELECT (u.nombre || ' ' || u.apellido),
            u.id
     INTO v_owner_name, v_owner_id
-    FROM cuenta c
-    INNER JOIN usuario u ON c.usuario_id = u.id
+    FROM "cuenta" c
+    INNER JOIN "usuario" u ON c.usuario_id = u.id
     WHERE c.iban = p_iban
-      AND c.estado = (SELECT id FROM estadoCuenta WHERE nombre = 'Activa');
+      AND c.estado = (SELECT id FROM "estadoCuenta" WHERE nombre = 'activa');
 
     IF FOUND THEN
         acc_exists := TRUE;

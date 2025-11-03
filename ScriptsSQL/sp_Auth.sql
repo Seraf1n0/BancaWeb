@@ -13,13 +13,14 @@ BEGIN
     RETURN QUERY
     SELECT 
         u.id,
-        u.contrasena_hash,
-        u.rol
+        u.contrasena_hash::varchar,
+        u.rol::int
     FROM usuario u
     WHERE u.usuario = p_username_or_email 
        OR u.correo = p_username_or_email;
 END;
 $$;
+
 
 CREATE OR REPLACE FUNCTION sp_api_key_is_active(
     p_api_key_hash VARCHAR
@@ -40,15 +41,15 @@ $$;
 
 CREATE OR REPLACE FUNCTION sp_otp_create(
     p_user_id UUID,
-    p_proposito VARCHAR,
+    p_proposito text,
     p_expires_in_seconds INTEGER,
-    p_codigo_hash VARCHAR,
+    p_codigo_hash text,
     OUT otp_id UUID
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Otps (
+    INSERT INTO "Otps" (
         usuario_id,
         codigo_hash,
         proposito,
@@ -65,10 +66,11 @@ BEGIN
 END;
 $$;
 
+
 CREATE OR REPLACE FUNCTION sp_otp_consume(
     p_user_id UUID,
-    p_proposito VARCHAR,
-    p_codigo_hash VARCHAR,
+    p_proposito text,
+    p_codigo_hash text,
     OUT consumed BOOLEAN
 )
 LANGUAGE plpgsql
@@ -82,7 +84,7 @@ BEGIN
     -- Buscar OTP válido y no consumido
     SELECT id, (fecha_expiracion < NOW()) 
     INTO v_otp_id, v_is_expired
-    FROM Otps
+    FROM "Otps"
     WHERE usuario_id = p_user_id
       AND proposito = p_proposito
       AND codigo_hash = p_codigo_hash
@@ -90,7 +92,7 @@ BEGIN
     
     -- En caso de que el otp exista y aun no se haya expirado
     IF v_otp_id IS NOT NULL AND NOT v_is_expired THEN
-        UPDATE Otps 
+        UPDATE "Otps" 
         SET fecha_consumido = NOW()
         WHERE id = v_otp_id;
         
@@ -98,3 +100,5 @@ BEGIN
     END IF;
 END;
 $$;
+
+
