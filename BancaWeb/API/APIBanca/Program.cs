@@ -68,6 +68,12 @@ builder.Services.AddHttpClient<BankValidateRepository>();
 builder.Services.AddScoped<BankValidateService>();
 builder.Services.AddScoped<BankValidateRepository>();
 
+builder.Services.AddHttpClient<ForgotPasswordRepository>();
+builder.Services.AddScoped<ForgotPasswordService>();
+builder.Services.AddScoped<ForgotPasswordRepository>();
+
+
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
