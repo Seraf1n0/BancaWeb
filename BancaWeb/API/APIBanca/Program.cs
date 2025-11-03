@@ -78,6 +78,10 @@ builder.Services.AddScoped<VerifyOtpService>();
 builder.Services.AddScoped<VerifyOtpRepository>();
 
 
+builder.Services.AddHttpClient<ResetPasswordRepository>();
+builder.Services.AddScoped<ResetPasswordService>();
+builder.Services.AddScoped<ResetPasswordRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
