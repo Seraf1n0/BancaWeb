@@ -30,10 +30,9 @@ namespace APIBanca.Models
     }
 
     // Modelo para actualizar el estado de una cuenta
-    public class UpdateEstadoCuenta
+    public class UpdateAccountStatusRequest
     {
-        [Required] public string idCuenta { get; set; } = "";
-        [Required] public int nuevoEstado { get; set; }
+        public string nuevo_estado { get; set; } = "";
     }
 
     // Modelo para paginación
@@ -57,4 +56,20 @@ namespace APIBanca.Models
     }
 
     public class MovimientoPage : PagedResult<Movimiento> { }
+
+    public class TransferInternalRequest
+    {
+        [Required] public Guid from_account_id { get; set; }
+        [Required] public Guid to_account_id { get; set; }
+        [Required, Range(0.01, double.MaxValue)] public decimal amount { get; set; }
+        [Required] public Guid currency { get; set; }
+        public string? descripcion { get; set; }
+    }
+
+    public class TransferInternalResponse
+    {
+        public Guid transfer_id { get; set; }
+        public string? receipt_number { get; set; }
+        public string? status { get; set; }
+    }
 }

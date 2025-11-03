@@ -2,48 +2,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization; 
 using APIBanca.Services;                
 using APIBanca.Models;                  
-using System;                           
-using System.Threading.Tasks;
 using System.Security.Claims;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/accounts/status")]
+[Route("api/v1/accounts")]
 public class UpdateAccountStateController : ControllerBase
 {
     private readonly UpdateAccountStateService _service;
 
-    public UpdateAccountStateController( UpdateAccountStateService service)
+    public UpdateAccountStateController(UpdateAccountStateService service)
     {
         _service = service;
     }
 
-    [HttpPut]
-    public async Task<IActionResult> ActualizarEstadoCuenta([FromBody] UpdateEstadoCuenta model)
+    [HttpPost("{accountId:guid}/status")]
+    public async Task<IActionResult> SetStatus([FromRoute] Guid accountId, [FromBody] UpdateAccountStatusRequest body)
     {
-        try {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null)
-            {
-                return Unauthorized();
-            }
-            var jwtRol = User.FindFirst(ClaimTypes.Role)?.Value;
-            Console.WriteLine($"ROL DEL JWT: {jwtRol}");
-            if (jwtRol != "1")
-            {
-                return Forbid();
-            }
-            var resultado = await _service.ActualizarEstadoCuenta(model);
-            if (!resultado)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        } catch (Exception ex)
-        {
-            Console.WriteLine($"ERROR: {ex.Message}");
-            return StatusCode(500, "Error interno del servidor.");
-        }
+        var role = User.FindFirstValue(ClaimTypes.Role) ?? "";
+        if (role != "1") return Forbid();
+
+        if (body == null || string.IsNullOrWhiteSpace(body.nuevo_estado))
+            return BadRequest(new { message = "nuevo_estado requerido" });
+
+        var ok = await _service.SetStatus(accountId, body.nuevo_estado);
+        return Ok(new { updated = ok });
     }
 }

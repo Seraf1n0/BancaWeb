@@ -14,21 +14,26 @@ public class JwtService
 
     public string GenerateToken(string userId, int rol)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
+        var key = _config["JWT:Key"] ?? throw new InvalidOperationException("JWT:Key no configurado");
+        var issuer = _config["JWT:Issuer"] ?? "MiBancaApi";
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim("userId", userId), 
-            new Claim("sessionId", Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, rol.ToString()) 
+            new Claim(JwtRegisteredClaimNames.Sub, userId),
+            new Claim("userId", userId),
+            new Claim(ClaimTypes.Role, rol.ToString()),
+            new Claim("sessionId", Guid.NewGuid().ToString())
         };
 
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Issuer"],
+            issuer: issuer,
+            audience: issuer,
             claims: claims,
-            expires: DateTime.Now.AddHours(2),
+            notBefore: DateTime.UtcNow,
+            expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: credentials
         );
 

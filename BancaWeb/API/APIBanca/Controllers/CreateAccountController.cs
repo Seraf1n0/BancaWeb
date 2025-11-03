@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIBanca.Services;
 using APIBanca.Models;
-using System;
-using System.Threading.Tasks;
 using System.Security.Claims;
-using System.Text.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 [Authorize]
 [ApiController]
@@ -13,44 +11,28 @@ using System.Text.Json;
 public class CreateAccountController : ControllerBase
 {
     private readonly CreateAccountService _service;
-
-    public CreateAccountController(CreateAccountService service)
-    {
-        _service = service;
-    }
+    public CreateAccountController(CreateAccountService service) => _service = service;
 
     [HttpPost]
-    public async Task<IActionResult> CreateAccount([FromBody] CreateCuenta cuenta)
+    public async Task<IActionResult> Create([FromBody] CreateCuenta cuenta)
     {
-        try
-        {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null)
-            {
-                return Unauthorized();
-            }
-            var jwtRol = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Console.WriteLine($"ROL DEL JWT: {jwtRol}");
-            if (jwtRol != "1")
-            {
-                return Forbid();
-            }
+        var rol = User.FindFirstValue(ClaimTypes.Role) ?? "";
+        var isAdmin = string.Equals(rol, "1", StringComparison.OrdinalIgnoreCase)
+                      || string.Equals(rol, "admin", StringComparison.OrdinalIgnoreCase);
 
-            var accountId = await _service.CrearCuentaAsync(cuenta);
+        var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                  ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                  ?? User.FindFirstValue("userId");
 
-            return Ok(new { AccountId = accountId });
-        }
-        catch (HttpRequestException ex)
-        {
-            Console.WriteLine($"ERROR SUPABASE: {ex.Message}");
-            return StatusCode(502, new { error = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"ERROR INTERNO: {ex.Message}");
-            return StatusCode(500, new { error = "Error interno del servidor." });
-        }
+        if (!Guid.TryParse(sub, out var callerId))
+            return Unauthorized(new { message = "Token inválido" });
+
+        if (!isAdmin)
+            cuenta.usuario_id = callerId;
+
+        var id = await _service.CrearCuentaAsync(cuenta);
+        return Created($"/api/v1/accounts/{id}", new { account_id = id });
     }
 }

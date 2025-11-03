@@ -12,9 +12,13 @@ namespace APIBanca.Services
             _repository = repository;
         }
 
-        public async Task<bool> ActualizarEstadoCuenta(UpdateEstadoCuenta updateEstadoCuenta)
+        public async Task<bool> SetStatus(Guid accountId, string nuevoEstadoInput)
         {
-            return await _repository.ActualizarEstadoCuenta(updateEstadoCuenta);
+            var resolved = await _repository.GetEstadoIdByNombreAsync(nuevoEstadoInput);
+            if (resolved == null)
+                throw new ArgumentException("Estado no válido");
+
+            return await _repository.SetStatusAsync(accountId, resolved.Value);
         }
     }
 }

@@ -11,8 +11,6 @@ namespace APIBanca.Services
             _repository = repository;
         }
 
-        // Método para crear una cuenta asíncrono
-        // Usa el modelo CreateCuenta
         public async Task<Guid> CrearCuentaAsync(CreateCuenta cuenta)
         {
             return await _repository.CreateAccountAsync(cuenta);

@@ -1,4 +1,5 @@
 using APIBanca.Services;
+using APIBanca.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
@@ -54,6 +55,16 @@ builder.Services.AddHttpClient<GetCardMovementRepository>();
 builder.Services.AddScoped<GetCardMovementService>();
 builder.Services.AddScoped<GetCardMovementRepository>();
 
+builder.Services.AddHttpClient<CreateAccountRepository>();
+builder.Services.AddScoped<CreateAccountService>();
+builder.Services.AddHttpClient<GetAccountRepository>();
+builder.Services.AddScoped<GetAccountService>();
+builder.Services.AddHttpClient<UpdateAccountStateRepository>();
+builder.Services.AddScoped<UpdateAccountStateService>();
+builder.Services.AddHttpClient<AccountMovementRepository>();
+builder.Services.AddScoped<AccountMovementService>();
+builder.Services.AddHttpClient<GetAccountMovementsRepository>();
+builder.Services.AddScoped<GetAccountMovementsService>();
 
 builder.Services.AddHttpClient<OtpCreateRepository>();
 builder.Services.AddScoped<OtpCreateService>();
@@ -67,6 +78,7 @@ builder.Services.AddScoped<OtpConsumeRepository>();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
+        options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -76,9 +88,17 @@ builder.Services.AddAuthentication("Bearer")
             ValidIssuer = builder.Configuration["JWT:Issuer"],
             ValidAudience = builder.Configuration["JWT:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
-
             NameClaimType = JwtRegisteredClaimNames.Sub,
-            RoleClaimType = ClaimTypes.Role
+            RoleClaimType = ClaimTypes.Role,
+            ClockSkew = TimeSpan.Zero
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine("[JWT] Auth failed: " + ctx.Exception.Message);
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -97,7 +117,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

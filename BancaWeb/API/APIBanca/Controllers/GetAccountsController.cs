@@ -5,6 +5,7 @@ using APIBanca.Models;
 using System;                           
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 [Authorize]
 [ApiController]
@@ -18,33 +19,45 @@ public class GetAccountsController : ControllerBase
         _service = service;
     }
 
+    // GET /api/v1/accounts?userId={ownerId?}&accountId={accountId?}
     [HttpGet]
-    public async Task<ActionResult<List<Cuenta>>> GetAccounts([FromQuery] string? userId, [FromQuery] string? accountId)
+    public async Task<ActionResult<List<Cuenta>>> GetAccounts(
+        [FromQuery(Name = "userId")] string? ownerId,
+        [FromQuery] string? accountId)
     {
-        try {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null || jwtUserId != userId) 
-            {
-                return Unauthorized();
-            }
-            var jwtRol = User.FindFirst(ClaimTypes.Role)?.Value;
-            Console.WriteLine($"ROL DEL JWT: {jwtRol}");
-            if (jwtRol != "1")
-            {
-                return Forbid();
-            }
+        try
+        {
+            var role = User.FindFirstValue(ClaimTypes.Role) ?? "";
+            var isAdmin = string.Equals(role, "1", StringComparison.OrdinalIgnoreCase) ||
+                          string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
 
-            Console.WriteLine($"USER ID RECIBIDO: {userId}");
-            Console.WriteLine($"ACCOUNT ID RECIBIDO: {accountId}");
-            var cuentas = await _service.GetAccounts(userId, accountId);
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                      ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                      ?? User.FindFirstValue("userId");
 
-            if (cuentas == null)
-                return BadRequest("No se pudieron obtener las cuentas.");
+            if (!Guid.TryParse(sub, out var callerId))
+                return Unauthorized(new { message = "Token inválido" });
+
+            if (!isAdmin)
+                ownerId = callerId.ToString();
+
+            var cuentas = await _service.GetAccounts(ownerId, accountId);
+
+            if (!isAdmin && !string.IsNullOrWhiteSpace(accountId))
+            {
+                if (cuentas.Count == 0 || cuentas.Any(c => c.usuario_id != callerId))
+                    return StatusCode(403, new { message = "Forbidden" });
+            }
 
             return Ok(cuentas);
-        } catch(Exception ex) {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+        catch (HttpRequestException ex)
+        {
+            return StatusCode(502, new { error = $"Error Supabase: {ex.Message}" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
         }
     }
 }

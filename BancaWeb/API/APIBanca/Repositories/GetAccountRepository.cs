@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text;
 using APIBanca.Models;
+using System.Net.Http.Headers;
 
 namespace APIBanca.Repositories
 {
@@ -18,6 +19,7 @@ namespace APIBanca.Repositories
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _supabaseKey);
         }
 
         // Método para obtener el listado de todas las cuentas
@@ -36,7 +38,6 @@ namespace APIBanca.Repositories
             { Content = content };
 
             request.Headers.Add("Prefer", "return=representation");
-            request.Headers.Add("apikey", _supabaseKey);
 
             var response = await _httpClient.SendAsync(request);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -47,23 +48,28 @@ namespace APIBanca.Repositories
             using var doc = JsonDocument.Parse(responseContent);
             var root = doc.RootElement;
 
-            if (root.ValueKind != JsonValueKind.Array || root.GetArrayLength() == 0)
-                throw new Exception("No se encontraron cuentas");
-
             var listaCuentas = new List<Cuenta>();
+            if (root.ValueKind != JsonValueKind.Array) return listaCuentas;
 
-            for (var i = 0; i < root.GetArrayLength(); i++) {
-                var c = root[i];
+            foreach (var c in root.EnumerateArray())
+            {
+                Guid tipoGuid =
+                    c.TryGetProperty("tipoCuenta", out var t1) && t1.ValueKind == JsonValueKind.String && Guid.TryParse(t1.GetString(), out var g1) ? g1 :
+                    c.TryGetProperty("tipo", out var t2) && t2.ValueKind == JsonValueKind.String && Guid.TryParse(t2.GetString(), out var g2) ? g2 :
+                    Guid.Empty;
+
                 listaCuentas.Add(new Cuenta
                 {
                     id = c.GetProperty("id").GetGuid(),
                     usuario_id = c.GetProperty("usuario_id").GetGuid(),
                     iban = c.GetProperty("iban").GetString() ?? "",
                     alias = c.GetProperty("alias").GetString() ?? "",
-                    tipoCuenta = c.GetProperty("tipo").GetGuid(),
+                    tipoCuenta = tipoGuid,
                     moneda = c.GetProperty("moneda").GetGuid(),
                     saldo = c.GetProperty("saldo").GetDecimal(),
-                    estado = c.GetProperty("estado").GetGuid()
+                    estado = c.GetProperty("estado").GetGuid(),
+                    fecha_creacion = c.TryGetProperty("fecha_creacion", out var fc) && fc.ValueKind == JsonValueKind.String ? fc.GetDateTime() : (DateTime?)null,
+                    fecha_actualizacion = c.TryGetProperty("fecha_actualizacion", out var fa) && fa.ValueKind == JsonValueKind.String ? fa.GetDateTime() : (DateTime?)null
                 });
             }
 
