@@ -53,11 +53,11 @@ BEGIN
         RAISE EXCEPTION 'No tiene permisos para transferir desde esta cuenta';
     END IF;
     
-    IF v_cuenta_origen.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'Activa') THEN
+    IF v_cuenta_origen.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'activa') THEN
         RAISE EXCEPTION 'La cuenta de origen no está activa';
     END IF;
     
-    IF v_cuenta_destino.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'Activa') THEN
+    IF v_cuenta_destino.estado != (SELECT id FROM "estadoCuenta" WHERE nombre = 'activa') THEN
         RAISE EXCEPTION 'La cuenta de destino no está activa';
     END IF;
     
@@ -151,38 +151,59 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION sp_bank_validate_account(
-    p_iban text
+    p_iban VARCHAR
 )
 RETURNS TABLE (
-    acc_exists BOOLEAN,
-    owner_name text,
-    owner_id UUID
+    exists_account BOOLEAN,
+    name VARCHAR,
+    identification VARCHAR,
+    currency VARCHAR,
+    debit BOOLEAN,
+    credit BOOLEAN
 )
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    v_owner_name text;
-    v_owner_id UUID;
+    v_name VARCHAR;
+    v_identification VARCHAR;
+    v_currency VARCHAR;
+    v_user_id UUID;
 BEGIN
-    SELECT (u.nombre || ' ' || u.apellido),
-           u.id
-    INTO v_owner_name, v_owner_id
-    FROM "cuenta" c
-    INNER JOIN "usuario" u ON c.usuario_id = u.id
+    SELECT (u.nombre || ' ' || u.apellido), u.identificacion, m.nombre, u.id
+    INTO v_name, v_identification, v_currency, v_user_id
+    FROM cuenta c
+    INNER JOIN usuario u ON c.usuario_id = u.id
+    INNER JOIN moneda m ON c.moneda = m.id
     WHERE c.iban = p_iban
-      AND c.estado = (SELECT id FROM "estadoCuenta" WHERE nombre = 'activa');
+      AND c.estado = (SELECT id FROM estadoCuenta WHERE nombre = 'activa');
 
-    IF FOUND THEN
-        acc_exists := TRUE;
-        owner_name := v_owner_name;
-        owner_id := v_owner_id;
-        RETURN NEXT;
-    ELSE
+    IF NOT FOUND THEN
     -- si no encontramos retornamos false
-        acc_exists := FALSE;
-        owner_name := NULL;
-        owner_id := NULL;
+        exists_account := FALSE;
+        name := NULL;
+        identification := NULL;
+        currency := NULL;
+        debit := FALSE;
+        credit := FALSE;
         RETURN NEXT;
+        RETURN;
     END IF;
+    -- En caso de encontrarla buscamos si tiene tarjeta credito valida:
+    -- A este punto deberiamos tener la info y la cuenta deberia aceptar debito
+    credit := (
+            SELECT EXISTS (
+                SELECT 1
+                FROM tarjeta t
+                WHERE t.usuario_id = v_user_id
+            )
+        );
+
+    -- Respuesta correcta:
+    exists_account := TRUE;
+    name := v_name;
+    identification := v_identification;
+    currency := v_currency;
+    debit := TRUE;
+    RETURN NEXT;
 END;
 $$;
