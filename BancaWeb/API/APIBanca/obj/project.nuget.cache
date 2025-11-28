@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mVBHSq3mpzk=",
+  "dgSpecHash": "9e3IPVDmlA0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\bryan\\Documents\\2proyeWeb\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj",
+  "projectFilePath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bryan\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\functions-csharp\\1.3.2\\functions-csharp.1.3.2.nupkg.sha512",

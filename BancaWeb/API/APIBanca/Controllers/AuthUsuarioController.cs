@@ -17,6 +17,9 @@ namespace APIBanca.Controllers
             _jwtService = jwtService;
         }
 
+        
+
+
         [HttpPost("login")]
         public async Task<IActionResult> PostAuthUser([FromBody] AuthUser authUser)
         {
@@ -33,6 +36,15 @@ namespace APIBanca.Controllers
 
                 var token = _jwtService.GenerateToken(userAuth.UserId.ToString(), userAuth.Rol);
                 
+                // Parte de las cookies
+                var opcionesCookies = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false, //Si cambiamos a https lo ponemos en true
+                    Expires = DateTimeOffset.UtcNow.AddHours(2),
+                };
+                Response.Cookies.Append("jwtToken", token, opcionesCookies);
+
 
                 return Ok(new { success = true,  message = "Autenticado correctamente", token = token, userId = userAuth.UserId,
                     rol = userAuth.Rol});
