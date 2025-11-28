@@ -55,9 +55,15 @@ namespace APIBanca.Services
                 var firstElement = root[0];
                 return new BankValidate
                 {
-                    existeCuenta = firstElement.GetProperty("acc_exists").GetBoolean(),
-                    propietarioCuenta = firstElement.GetProperty("owner_name").GetString(),
-                    idPropietario = firstElement.GetProperty("owner_id").GetString()
+                    exists = firstElement.GetProperty("exists_account").GetBoolean(),
+                    info = new Info
+                    {
+                        name = firstElement.GetProperty("name").GetString(),
+                        identification = firstElement.GetProperty("identification").GetString(),
+                        currency = firstElement.GetProperty("currency").GetString(),
+                        debit = firstElement.GetProperty("debit").GetBoolean(),
+                        credit = firstElement.GetProperty("credit").GetBoolean()
+                    }
                 };
             }
             else

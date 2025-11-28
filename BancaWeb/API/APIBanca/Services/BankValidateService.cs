@@ -11,9 +11,16 @@ namespace APIBanca.Services
             _repository = repository;
         }
 
+        // Logica para verificar la cuenta bancaria
         public async Task<BankValidate> VerificarCuenta(string iban) 
         {
-            return await _repository.VerificarCuenta(iban);
+            var resultado = await _repository.VerificarCuenta(iban);
+            if (resultado == null)
+            {
+                throw new Exception("No se pudo verificar la cuenta bancaria, " + iban + ".");
+            }
+
+            return resultado;
         }
     }
 }

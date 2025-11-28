@@ -37,7 +37,16 @@ public class BankValidateController : ControllerBase
             if (consulta == null)
                 return BadRequest("No se pudo obtener la consulta.");
 
-            return Ok(new { mensaje = $"La cuenta existe: {consulta.existeCuenta}, Propietario: {consulta.propietarioCuenta}, ID Propietario: {consulta.idPropietario}" });
+            if (!consulta.exists)
+                return NotFound("La cuenta bancaria no existe.");
+
+            if (consulta.info == null)
+                return NotFound("No se encontraron detalles del propietario de la cuenta.");
+            
+            if (string.IsNullOrEmpty(consulta.info.name) || string.IsNullOrEmpty(consulta.info.identification))
+                return NotFound("Faltan detalles del propietario de la cuenta.");
+
+            return Ok(consulta);
         } catch(Exception ex) {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
