@@ -60,6 +60,18 @@ public class BankValidateController : ControllerBase
                 }
             );
         }
+        // Bad request si no encontramos el body o el iban
+        if (ibanAccount == null || string.IsNullOrEmpty(ibanAccount.iban))
+        {
+            return new BadRequestObjectResult(
+                new BankValidateBadRequest
+                {
+                    error = "MISSING_ACCOUNT_IBAN",
+                    message = "Falta el IBAN de la cuenta bancaria a validar."
+                }
+            );
+        }
+
         // Validamos formato de iban sino 401
         if (!validarIban(ibanAccount.iban))
         {

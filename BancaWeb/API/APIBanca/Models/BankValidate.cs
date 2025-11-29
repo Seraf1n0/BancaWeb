@@ -43,4 +43,10 @@ namespace APIBanca.Models
         public string error { get; set; }
         public string message { get; set; }
     }
+
+    public class BankValidateBadRequest
+    {
+        public string error { get; set; }
+        public string message { get; set; }
+    }
 }
