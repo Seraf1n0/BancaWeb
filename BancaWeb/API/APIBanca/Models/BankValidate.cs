@@ -23,4 +23,24 @@ namespace APIBanca.Models
     {
         public string iban { get; set; }
     }
+
+    // Unauthorized al validar cuenta bancaria
+    public class BankValidateUnauthorized
+    {
+        public string error { get; set; }
+        public string message { get; set; }
+    }
+
+    // Notfound al validar cuenta bancaria
+    public class BankValidateNotFound
+    {
+        public string error { get; set; }
+        public string message { get; set; }
+    }
+
+    public class BankValidateServerError
+    {
+        public string error { get; set; }
+        public string message { get; set; }
+    }
 }

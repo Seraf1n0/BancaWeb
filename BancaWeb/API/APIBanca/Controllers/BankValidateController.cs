@@ -1,54 +1,116 @@
 using Microsoft.AspNetCore.Mvc;        
 using Microsoft.AspNetCore.Authorization; 
 using APIBanca.Services;                
-using APIBanca.Models;                  
-using System;                           
-using System.Threading.Tasks;          
+using APIBanca.Models;                           
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 
-[Authorize]
 [ApiController]
 [Route("api/v1/bank/validate-account")]
 public class BankValidateController : ControllerBase
 {
     private readonly BankValidateService _service;
+    private readonly string _bankCentralApiToken;
 
-    public BankValidateController(BankValidateService service)
+    public BankValidateController(BankValidateService service, IConfiguration configuration)
     {
         _service = service;
+        _bankCentralApiToken = configuration["Security:ApiTokenBancoCentral"];
+    }
+
+    private static bool validarIban (string iban)
+    {
+        if (string.IsNullOrEmpty(iban))
+            return false;
+
+        iban = iban.Trim().ToUpperInvariant();
+
+        // Letras mayusculas y dígitos
+        if (!Regex.IsMatch(iban, @"^[A-Z0-9]+$"))
+            return false;
+        // Patron y longitud: CR + 2 numeros, B01(banco prometedores) + 23 digitos
+        if (!Regex.IsMatch(iban, @"^CR\d{2}B01\d{20}$"))
+            return false;
+        
+        return true;
     }
 
     [HttpPost]
     public async Task<IActionResult> VerificarCuenta([FromBody] IbanAccount ibanAccount)
     {
-        try {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null) 
-            {
-                return Unauthorized();
-            }
-            var jwtRol = User.FindFirst(ClaimTypes.Role)?.Value;
-            Console.WriteLine($"ROL DEL JWT: {jwtRol}");
+        // Validamos el api token del Banco Central
+        if (!Request.Headers.TryGetValue("X-API-TOKEN", out var apiTokenExtraido))
+        {
+            return new UnauthorizedObjectResult(
+                new BankValidateUnauthorized
+                {
+                    error = "MISSING_API_TOKEN",
+                    message = "Falta el token de API para el Banco Central."
+                }
+            );
+        }
+        if (apiTokenExtraido != _bankCentralApiToken)
+        {
+            return new UnauthorizedObjectResult(
+                new BankValidateUnauthorized
+                {
+                    error = "INVALID_API_TOKEN",
+                    message = "El token de API para el Banco Central es inválido."
+                }
+            );
+        }
+        // Validamos formato de iban sino 401
+        if (!validarIban(ibanAccount.iban))
+        {
+            return new UnauthorizedObjectResult(
+                new BankValidateUnauthorized
+                {
+                    error = "INVALID_ACCOUNT_FORMAT",
+                    message = "El formato de la cuenta bancaria (IBAN) es inválido."
+                }
+            );
+        }
 
+        try {
             var consulta = await _service.VerificarCuenta(ibanAccount.iban);
 
-            if (consulta == null)
-                return BadRequest("No se pudo obtener la consulta.");
-
-            if (!consulta.exists)
-                return NotFound("La cuenta bancaria no existe.");
+            if (consulta == null || !consulta.exists)
+                return new NotFoundObjectResult(
+                    new BankValidateNotFound
+                    {
+                        error = "ACCOUNT_NOT_FOUND",
+                        message = "No se encontró la cuenta bancaria solicitada."
+                    }
+                );
 
             if (consulta.info == null)
-                return NotFound("No se encontraron detalles del propietario de la cuenta.");
+                return new NotFoundObjectResult(
+                    new BankValidateNotFound
+                    {
+                        error = "OWNER_DETAILS_NOT_FOUND",
+                        message = "No se encontraron detalles del propietario de la cuenta."
+                    }
+                );
             
             if (string.IsNullOrEmpty(consulta.info.name) || string.IsNullOrEmpty(consulta.info.identification))
-                return NotFound("Faltan detalles del propietario de la cuenta.");
+                return new NotFoundObjectResult(
+                    new BankValidateNotFound
+                    {
+                        error = "OWNER_DETAILS_INCOMPLETE",
+                        message = "Faltan detalles del propietario de la cuenta."
+                    }
+                );
 
             return Ok(consulta);
         } catch(Exception ex) {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-        }
+            return new ObjectResult(
+                new BankValidateServerError
+                {
+                    error = "SERVER_ERROR",
+                    message = "Ocurrió un error interno al procesar la solicitud: " + ex.Message
+                }
+            ) { StatusCode = 500 };
+        } 
     }
 }
