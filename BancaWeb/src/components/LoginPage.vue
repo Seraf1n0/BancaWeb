@@ -5,7 +5,6 @@ import PasswordRecovery from './PasswordRecovery.vue'
 
 <template>
   <div class="login-page-container">
-    <h1>Inicia sesión en tu cuenta</h1>
     <LoginForm />
     <p>
       ¿Aún no tienes cuenta?

@@ -31,23 +31,67 @@ const checkboxTerms= ref(false)
 
 
 
-const showAlert = (type, message, autoClose = true, duration = 4000) => {
+function showAlert(type, message, autoClose = true, duration = 4000) {
   customAlert.value = { show: true, type, message, autoClose, duration };
 }
 
-const submitData = () => {
+
+function tipoIdentificacionValue(val) {
+  if (val === 'option1') return 1;
+  if (val === 'option2') return 2;
+  if (val === 'option3') return 3;
+  return 0;
+}
+
+
+async function registerAccount(tipoIdentificacion, identificationNumber, firstName, lastName, email,
+  username, phoneNumber, password, tipoRol) {
+  const response = await fetch('http://localhost:5015/api/v1/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      p_tipo_identificacion: tipoIdentificacion,
+      p_identificacion: identificationNumber,
+      p_nombre: firstName,
+      p_apellido: lastName,
+      p_correo: email,
+      p_usuario: username,
+      p_telefono: phoneNumber,
+      p_contrasena_hash: password,
+      p_rol: tipoRol
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+
+const submitData = async () => {
   if (isValidId.value) {
     console.log('Datos listos para enviar:', {
       identificationNumber: identificationNumber.value,
       username: username.value,
       firstName: firstName.value,
-      lastName1: lastName1.value,
-      lastName2: lastName2.value,
+      fullLastName: fullLastName.value,
       dateBirth: dateBirth.value,
       email: email.value,
       phoneNumber: phoneNumber.value,
       password: firstPassword.value,
     });
+    const result = await registerAccount(
+      tipoIdentificacionValue(checkboxValue.value),
+      identificationNumber.value,
+      firstName.value,
+      lastName1.value,
+      email.value,
+      username.value,
+      phoneNumber.value,
+      firstPassword.value,
+      1
+    );
+    console.log('Respuesta del backend:', result)
     showAlert("loading", "🕐 Su cuenta está siendo creada...", false);
         setTimeout(() => {
         showAlert("success", "✅ Su cuenta fue creada con éxito");
@@ -153,6 +197,10 @@ const handleKeypress = (event) => {
     event.preventDefault(); 
   }
 };
+
+const fullLastName = computed(() => {
+  return `${lastName1.value} ${lastName2.value}`.trim();
+});
 
 
 const fullName = computed(() => {
