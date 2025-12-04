@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 
 
-[Authorize]
 [ApiController]
 [Route("/api/v1/auth/reset-password")]
 public class ResetPasswordController : ControllerBase
@@ -22,28 +21,42 @@ public class ResetPasswordController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> ResetPassword([FromBody] OtpConsumeM otpConsumeM)
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordM resetPasswordM)
     {
         try {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null) 
+            
+            if (string.IsNullOrEmpty(resetPasswordM.user_id))
             {
-                return Unauthorized();
+                return BadRequest("El user_id es requerido.");
             }
 
+            if (string.IsNullOrEmpty(resetPasswordM.nueva_contrasena))
+            {
+                return BadRequest("La nueva contraseña es requerida.");
+            }
 
-            var otpOriginal = otpConsumeM.codigo_hash;
-            var contrasenaEncrypt =  _encryptionProtect.Encrypt(otpConsumeM.codigo_hash);
-            otpConsumeM.codigo_hash = contrasenaEncrypt;
+            
+            var otpOriginal = resetPasswordM.codigo_hash;
+            var otpEncrypt = _encryptionProtect.Encrypt(resetPasswordM.codigo_hash);
+            resetPasswordM.codigo_hash = otpEncrypt;
+            
+            
+            var passwordOriginal = resetPasswordM.nueva_contrasena;
+            var passwordEncrypt = _encryptionProtect.Encrypt(resetPasswordM.nueva_contrasena);
+            resetPasswordM.nueva_contrasena = passwordEncrypt;
+
+            Console.WriteLine($"User ID: {resetPasswordM.user_id}");
             Console.WriteLine($"Código OTP original: {otpOriginal}");
-            Console.WriteLine($"Código OTP encriptado: {contrasenaEncrypt}");
-            var consulta = await _service.ResetPassword(otpConsumeM);
+            Console.WriteLine($"Código OTP encriptado: {otpEncrypt}");
+            Console.WriteLine($"Nueva contraseña original: {passwordOriginal}");
+            Console.WriteLine($"Nueva contraseña encriptada: {passwordEncrypt}");
 
-            if (consulta == null)
-                return BadRequest("No se pudo obtener la consulta.");
+            var resultado = await _service.ResetPassword(resetPasswordM);
 
-            return Ok($"El otp fue consumido: {consulta}");
+            if (!resultado)
+                return BadRequest("No se pudo restablecer la contraseña. Código inválido o expirado.");
+
+            return Ok(new { message = "Contraseña restablecida correctamente", success = true });
         } catch(Exception ex) {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 
 
-[Authorize]
 [ApiController]
 [Route("api/v1/auth/verify-otp")]
 public class VerifyOtpController : ControllerBase
@@ -25,25 +24,25 @@ public class VerifyOtpController : ControllerBase
     public async Task<IActionResult> VerifyOtp([FromBody] OtpConsumeM otp)
     {
         try {
-            var jwtUserId = User.FindFirst("userId")?.Value;
-            Console.WriteLine($"ID DEL JWT: {jwtUserId}");
-            if (jwtUserId == null) 
+            
+            if (string.IsNullOrEmpty(otp.user_id))
             {
-                return Unauthorized();
+                return BadRequest("El user_id es requerido.");
             }
 
 
             var otpOriginal = otp.codigo_hash;
             var contrasenaEncrypt =  _encryptionProtect.Encrypt(otp.codigo_hash);
             otp.codigo_hash = contrasenaEncrypt;
+            Console.WriteLine($"User ID: {otp.user_id}");
             Console.WriteLine($"Código OTP original: {otpOriginal}");
             Console.WriteLine($"Código OTP encriptado: {contrasenaEncrypt}");
             var consulta = await _service.VerifyOtp(otp);
 
             if (consulta == null)
-                return BadRequest("No se pudo obtener la consulta.");
+                return BadRequest("Código inválido o expirado.");
 
-            return Ok($"El otp fue consumido: {consulta}");
+            return Ok(new { message = "Código verificado correctamente", success = true });
         } catch(Exception ex) {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }

@@ -12,8 +12,8 @@ namespace APIBanca.Services
             _repository = repository;
         }
 
-        public async Task<bool> ResetPassword(OtpConsumeM otp) {
-            return await _repository.ResetPassword(otp);
+        public async Task<bool> ResetPassword(ResetPasswordM resetPassword) {
+            return await _repository.ResetPassword(resetPassword);
         }
 
     }

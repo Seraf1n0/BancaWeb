@@ -20,49 +20,85 @@ namespace APIBanca.Services
             _httpClient.DefaultRequestHeaders.Add("apikey", _supabaseKey);
         }
 
-        public async Task<bool> ResetPassword(OtpConsumeM otpConsumeM)
+        public async Task<bool> ResetPassword(ResetPasswordM resetPasswordM)
         {
-            var url = $"{_supabaseUrl}/rest/v1/rpc/sp_otp_consume";
-            var body = new {
-                p_user_id = otpConsumeM.user_id,
-                p_proposito = otpConsumeM.proposito,
-                p_codigo_hash = otpConsumeM.codigo_hash,
+            
+            var urlOtp = $"{_supabaseUrl}/rest/v1/rpc/sp_otp_consume";
+            var bodyOtp = new {
+                p_user_id = resetPasswordM.user_id,
+                p_proposito = resetPasswordM.proposito,
+                p_codigo_hash = resetPasswordM.codigo_hash,
             };
 
-            var jsonBody = JsonSerializer.Serialize(body);
-            Console.WriteLine($"JSON enviado: {jsonBody}");
+            var jsonBodyOtp = JsonSerializer.Serialize(bodyOtp);
+            Console.WriteLine($"JSON OTP enviado: {jsonBodyOtp}");
             
-            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            var contentOtp = new StringContent(jsonBodyOtp, Encoding.UTF8, "application/json");
+            var requestOtp = new HttpRequestMessage(HttpMethod.Post, urlOtp) { Content = contentOtp };
+            requestOtp.Headers.Add("apikey", _supabaseKey);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
-            { Content = content };
+            var responseOtp = await _httpClient.SendAsync(requestOtp);
+            var responseContentOtp = await responseOtp.Content.ReadAsStringAsync();
 
-            request.Headers.Add("apikey", _supabaseKey);
+            Console.WriteLine($"Response OTP Supabase: {responseContentOtp}");
 
-            var response = await _httpClient.SendAsync(request);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            if (!responseOtp.IsSuccessStatusCode)
+                throw new HttpRequestException($"Error Supabase OTP ({responseOtp.StatusCode}): {responseContentOtp}");
 
-            Console.WriteLine($"Response Supabase: {responseContent}");
+            using var docOtp = JsonDocument.Parse(responseContentOtp);
+            var rootOtp = docOtp.RootElement;
 
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"Error Supabase ({response.StatusCode}): {responseContent}");
-
-            using var doc = JsonDocument.Parse(responseContent);
-            var root = doc.RootElement;
-
-            
-            if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty("consumed", out var otpIdElement))
+            bool otpConsumed = false;
+            if (rootOtp.ValueKind == JsonValueKind.Object && rootOtp.TryGetProperty("consumed", out var otpConsumedElement))
             {
-                return otpIdElement.GetBoolean();
+                otpConsumed = otpConsumedElement.GetBoolean();
+            }
+            else if (rootOtp.ValueKind == JsonValueKind.Array && rootOtp.GetArrayLength() > 0)
+            {
+                otpConsumed = rootOtp[0].GetProperty("consumed").GetBoolean();
+            }
+
+            if (!otpConsumed)
+            {
+                return false; 
             }
 
             
-            if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
-            {
-                return root[0].GetProperty("consumed").GetBoolean();
-            } 
+            var urlPassword = $"{_supabaseUrl}/rest/v1/rpc/sp_users_update_password";
+            var bodyPassword = new {
+                p_user_id = resetPasswordM.user_id,
+                p_nueva_contrasena_hash = resetPasswordM.nueva_contrasena
+            };
 
-            throw new Exception($"Formato de respuesta inesperado de Supabase: {responseContent}");
+            var jsonBodyPassword = JsonSerializer.Serialize(bodyPassword);
+            Console.WriteLine($"JSON Password enviado: {jsonBodyPassword}");
+            
+            var contentPassword = new StringContent(jsonBodyPassword, Encoding.UTF8, "application/json");
+            var requestPassword = new HttpRequestMessage(HttpMethod.Post, urlPassword) { Content = contentPassword };
+            requestPassword.Headers.Add("apikey", _supabaseKey);
+
+            var responsePassword = await _httpClient.SendAsync(requestPassword);
+            var responseContentPassword = await responsePassword.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Response Password Supabase: {responseContentPassword}");
+
+            if (!responsePassword.IsSuccessStatusCode)
+                throw new HttpRequestException($"Error Supabase Password ({responsePassword.StatusCode}): {responseContentPassword}");
+
+            using var docPassword = JsonDocument.Parse(responseContentPassword);
+            var rootPassword = docPassword.RootElement;
+
+            if (rootPassword.ValueKind == JsonValueKind.Object && rootPassword.TryGetProperty("updated", out var updatedElement))
+            {
+                return updatedElement.GetBoolean();
+            }
+
+            if (rootPassword.ValueKind == JsonValueKind.Array && rootPassword.GetArrayLength() > 0)
+            {
+                return rootPassword[0].GetProperty("updated").GetBoolean();
+            }
+
+            throw new Exception($"Formato de respuesta inesperado de Supabase: {responseContentPassword}");
         } 
     }
 }

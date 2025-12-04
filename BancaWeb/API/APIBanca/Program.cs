@@ -93,6 +93,9 @@ builder.Services.AddHttpClient<ResetPasswordRepository>();
 builder.Services.AddScoped<ResetPasswordService>();
 builder.Services.AddScoped<ResetPasswordRepository>();
 
+builder.Services.AddHttpClient<UserUuidRepository>();
+builder.Services.AddScoped<UserUuidRepository>();
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {

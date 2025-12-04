@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 
 
-[Authorize]
+
 [ApiController]
 [Route("/api/v1/auth/forgot-password")]
 public class ForgotPasswordController : ControllerBase

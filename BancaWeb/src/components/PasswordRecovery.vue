@@ -13,6 +13,8 @@ const showUserRecuperation = ref(true)
 const newpassword = ref('')
 const showNewPassword = ref(false)
 const router = useRouter()
+const userId = ref('');
+
 
 
 const customAlert = ref({
@@ -31,75 +33,178 @@ const isValidUsername = computed(() => {
   return /^[a-z0-9._-]{4,20}$/.test(username.value);
 });
 
-const submitData = () => {
-  console.log('Datos listos para enviar:', {
-    username: username.value,
+async function passwordRecovery(username) {
+  const response = await fetch(`http://localhost:5015/api/v1/users/uuid?username=${username}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    
   });
+  const data = await response.json()
+  return data
+}
+
+
+const submitData = async () => {
+  console.log('Datos listos para enviar:', { username: username.value });
   showAlert("loading", "🕐 Enviando el usuario...");
-  if (isValidUsername.value === false) {
+  if (!isValidUsername.value) {
     setTimeout(() => {
       showAlert("error", "❌ El usuario debe tener entre 4 y 20 caracteres, y solo puede contener letras minúsculas, números, puntos, guiones y guiones bajos");
     }, 2000);
     return;
-  } else {
+  }
+
+  try {
+    const response = await fetch(`http://localhost:5015/api/v1/users/uuid?username=${username.value}`);
+    if (!response.ok) {
+      showAlert("error", "❌ Usuario no encontrado");
+      return;
+    }
+    const data = await response.json();
+    if (!data.userId) {
+      showAlert("error", "❌ Usuario no encontrado");
+      return;
+    }
+    userId.value = data.userId;
+
+    // Enviar POST para generar OTP
+    const otpBody = {
+      user_id: userId.value,
+      proposito: "RecuperarContra",
+      codigo_hash: "1256", // Puedes cambiar esto si quieres un código dinámico
+      expiresInt: 10000
+    };
+    const otpResponse = await fetch('http://localhost:5015/api/v1/auth/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(otpBody)
+    });
+    const otpText = await otpResponse.text();
+    console.log("Respuesta OTP:", otpText);
+    if (!otpResponse.ok) {
+      showAlert("error", "❌ Error al generar código de recuperación");
+      return;
+    }
     setTimeout(() => {
       showAlert("success", "✅ Código enviado al correo asociado");
     }, 2000);
+    showUserRecuperation.value = false;
+    showCodeInput.value = true;
+    showNewPassword.value = false;
+  } catch (error) {
+     showAlert("error", "❌ Error de conexión: " + (error?.message || error));
+      console.error("Error detalle:", error);
   }
-  showUserRecuperation.value = false
-  showCodeInput.value = true
-  showNewPassword.value = false
 };
 
-const submitCode = () => {
+
+
+
+const submitCode = async () => {
   console.log('Datos listos para enviar:', {
     verificationCode: verificationCode.value,
+    userId: userId.value
   });
-  if(verificationCode.value.length <= 1){
-    showAlert("loading", "🕐 Verificando código...", false);
-    setTimeout(() => {
-      showAlert("error", "❌ Código inválido, intente nuevamente");
-    }, 3500);
+  
+  if (verificationCode.value.length <= 1) {
+    showAlert("error", "❌ Código inválido, intente nuevamente");
     return;
-  } else {
-    showAlert("loading", "🕐 Verificando código...", false);
-    setTimeout(() => {
-      showAlert("success", "✅ Código verificado");
-    }, 3500);
   }
-  showUserRecuperation.value = false
-  showCodeInput.value = false
-  showNewPassword.value = true
-};
 
-const changePassword = () => {
-  console.log('Datos listos para enviar:', {
-    newpassword: newpassword.value,
-  });
-  if (rigthPassword.value === false) {
-    showAlert("loading", "🕐 Verificando credenciales...", false);
-    setTimeout(() => {
-      showAlert("error", "❌ Contraseña no válida");
+  showAlert("loading", "🕐 Verificando código...", false);
+
+  try {
+    const otpBody = {
+      user_id: userId.value,
+      proposito: "RecuperarContra",
+      codigo_hash: verificationCode.value
+    };
+
+    const response = await fetch('http://localhost:5015/api/v1/auth/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(otpBody)
+    });
+
+    if (!response.ok) {
       setTimeout(() => {
-        router.push('/password-recovery');
-      }, 2000);
-    }, 3000);
-    return;
-  } else {
-    showAlert("loading", "🕐 Verificando credenciales...", false);
+        showAlert("error", "❌ Código inválido o expirado");
+      }, 1500);
+      return;
+    }
+
     setTimeout(() => {
-      showAlert("success", "✅ Contraseña restablecida");
-      setTimeout(() => {
-        router.push('/loginForm');
-      }, 2000);
-    }, 3000);
+      showAlert("success", "✅ Código verificado correctamente");
+    }, 1500);
+
+    showUserRecuperation.value = false;
+    showCodeInput.value = false;
+    showNewPassword.value = true;
+
+  } catch (error) {
+    showAlert("error", "❌ Error de conexión: " + (error?.message || error));
+    console.error("Error detalle:", error);
   }
-}
+};
 
 const rigthPassword = computed(() => {
   const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/;
   return newpassword.value.length >= 8 && regex.test(newpassword.value);
 });
+
+const changePassword = async () => {
+  console.log('Nueva contraseña lista para enviar');
+  
+  if (!rigthPassword.value) {
+    showAlert("error", "❌ La contraseña debe tener mínimo 8 caracteres, al menos 1 mayúscula, 1 minúscula y 1 dígito");
+    return;
+  }
+
+  showAlert("loading", "🕐 Restableciendo contraseña...", false);
+
+  try {
+    const resetBody = {
+      user_id: userId.value,
+      proposito: "RecuperarContra",
+      codigo_hash: verificationCode.value,
+      nueva_contrasena: newpassword.value
+    };
+
+    const response = await fetch('http://localhost:5015/api/v1/auth/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(resetBody)
+    });
+
+    if (!response.ok) {
+      setTimeout(() => {
+        showAlert("error", "❌ No se pudo restablecer la contraseña");
+      }, 1500);
+      return;
+    }
+
+    setTimeout(() => {
+      showAlert("success", "✅ Contraseña restablecida correctamente");
+    }, 1500);
+
+    
+    setTimeout(() => {
+      router.push('/loginForm');
+    }, 3000);
+
+  } catch (error) {
+    showAlert("error", "❌ Error de conexión: " + (error?.message || error));
+    console.error("Error detalle:", error);
+  }
+};
 </script>
 
   

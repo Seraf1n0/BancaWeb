@@ -204,3 +204,28 @@ BEGIN
     deleted := TRUE;
 END;
 $$;
+
+
+CREATE OR REPLACE FUNCTION sp_users_update_password(
+    p_user_id UUID,
+    p_nueva_contrasena_hash text,
+    OUT updated BOOLEAN
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    updated := FALSE;
+    
+    IF NOT EXISTS (SELECT 1 FROM usuario WHERE id = p_user_id) THEN
+        RAISE EXCEPTION 'Usuario no encontrado';
+    END IF;
+    
+    UPDATE usuario 
+    SET 
+        contrasena_hash = p_nueva_contrasena_hash,
+        fecha_actualizacion = NOW()
+    WHERE id = p_user_id;
+    
+    updated := TRUE;
+END;
+$$;

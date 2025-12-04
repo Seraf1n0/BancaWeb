@@ -5,10 +5,12 @@ namespace APIBanca.Services
     public class UsuarioService
     {
         private readonly AuthUsuarioRepository _usuarioRepository;
+        private readonly EncryptionProtect _encryptionProtect;
 
-        public UsuarioService(AuthUsuarioRepository usuarioRepository)
+        public UsuarioService(AuthUsuarioRepository usuarioRepository, EncryptionProtect encryptionProtect)
         {
             _usuarioRepository = usuarioRepository;
+            _encryptionProtect = encryptionProtect;
         }
 
         public async Task<UserAuthResponse?> ValidarUsuario(string usernameOrEmail, string password)
@@ -20,8 +22,13 @@ namespace APIBanca.Services
                 return null; 
             }
 
+            
+            var passwordEncriptada = _encryptionProtect.Encrypt(password);
+            Console.WriteLine($"Password ingresada: {password}");
+            Console.WriteLine($"Password encriptada: {passwordEncriptada}");
+            Console.WriteLine($"Password en BD: {usuario.ContrasenaHash}");
 
-            bool passwordValida = password == usuario.ContrasenaHash;
+            bool passwordValida = passwordEncriptada == usuario.ContrasenaHash;
 
             if (!passwordValida)
             {
