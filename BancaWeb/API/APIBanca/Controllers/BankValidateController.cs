@@ -29,8 +29,8 @@ public class BankValidateController : ControllerBase
         // Letras mayusculas y dígitos
         if (!Regex.IsMatch(iban, @"^[A-Z0-9]+$"))
             return false;
-        // Patron y longitud: CR + 2 numeros, B01(banco prometedores) + 23 digitos
-        if (!Regex.IsMatch(iban, @"^CR\d{2}B01\d{20}$"))
+        // Patron y longitud: CR + 2 numeros, B01(banco prometedores) + 12 digitos
+        if (!Regex.IsMatch(iban, @"^CR\d{2}B01\d{12}$"))
             return false;
         
         return true;
@@ -75,8 +75,8 @@ public class BankValidateController : ControllerBase
         // Validamos formato de iban sino 401
         if (!validarIban(ibanAccount.iban))
         {
-            return new UnauthorizedObjectResult(
-                new BankValidateUnauthorized
+            return new BadRequestObjectResult(
+                new BankValidateBadRequest
                 {
                     error = "INVALID_ACCOUNT_FORMAT",
                     message = "El formato de la cuenta bancaria (IBAN) es inválido."
