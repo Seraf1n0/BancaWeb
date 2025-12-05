@@ -217,7 +217,6 @@ namespace APIBanca.Handlers
             }
         }
 
-¿
         private async Task HandleTransferCredit(JsonElement data)
         {
             Console.WriteLine("═══ transfer.credit RECIBIDO ═══");
