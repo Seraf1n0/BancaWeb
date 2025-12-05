@@ -5,7 +5,7 @@ using APIBanca.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 
-[Authorize]
+
 [ApiController]
 [Route("api/v1/accounts")]
 public class CreateAccountController : ControllerBase
