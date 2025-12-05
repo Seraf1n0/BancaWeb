@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj": {}
+    "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj": {}
   },
   "projects": {
-    "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj": {
+    "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj",
+        "projectUniqueName": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj",
         "projectName": "APIBanca",
-        "projectPath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj",
+        "projectPath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj",
         "packagesPath": "C:\\Users\\bryan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\obj\\",
+        "outputPath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\bryan\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -59,6 +59,10 @@
             "Npgsql": {
               "target": "Package",
               "version": "[9.0.4, )"
+            },
+            "SocketIOClient": {
+              "target": "Package",
+              "version": "[3.1.2, )"
             },
             "supabase-csharp": {
               "target": "Package",

@@ -28,7 +28,7 @@ BEGIN
     -- 1. Obtener el ID de la cuenta origen usando el IBAN
     SELECT id, saldo INTO v_from_account_id, v_current_balance
     FROM cuenta
-    WHERE iban = p_from_iban AND usuario_id = p_user_id AND estado = 'activa';
+    WHERE iban = p_from_iban AND usuario_id = p_user_id;
 
     IF v_from_account_id IS NULL THEN
         RAISE EXCEPTION 'La cuenta origen no existe o no pertenece al usuario';

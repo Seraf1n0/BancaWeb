@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using APIBanca.Handlers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +67,7 @@ builder.Services.AddScoped<AccountMovementService>();
 builder.Services.AddHttpClient<GetAccountMovementsRepository>();
 builder.Services.AddScoped<GetAccountMovementsService>();
 
+
 builder.Services.AddHttpClient<OtpCreateRepository>();
 builder.Services.AddScoped<OtpCreateService>();
 builder.Services.AddScoped<OtpCreateRepository>();
@@ -92,6 +94,20 @@ builder.Services.AddScoped<VerifyOtpRepository>();
 builder.Services.AddHttpClient<ResetPasswordRepository>();
 builder.Services.AddScoped<ResetPasswordService>();
 builder.Services.AddScoped<ResetPasswordRepository>();
+
+
+builder.Services.AddHttpClient<InterbankTransferRepository>();
+builder.Services.AddHttpClient<TransferReserveRepository>();
+builder.Services.AddScoped<TransferReserveRepository>();
+builder.Services.AddSingleton<BankSocketHandler>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<BankSocketHandler>>();
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    return new BankSocketHandler(logger, scopeFactory);
+});
+builder.Services.AddScoped<InterbankTransferService>();
+
+
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -132,7 +148,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://localhost:5174")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -159,5 +175,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+//Pedimos el objeto y lo dejamos en un segundo plano 
+var centralBank = app.Services.GetRequiredService<BankSocketHandler>();
+_ = centralBank.ConnectAsync();
 
 app.Run();

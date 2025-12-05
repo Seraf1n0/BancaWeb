@@ -27,11 +27,8 @@ namespace APIBanca.Repositories
             string toIban, 
             decimal amount, 
             string currency, 
-            string? descripcion, 
-            Guid userId)
+            string? descripcion)
         {
-            // Por ahora, guardamos el movimiento en la BD usando el stored procedure
-            // Más adelante integraremos la comunicación con el Banco Central via WebSocket
             
             var url = $"{_supabaseUrl}/rest/v1/rpc/sp_transfer_create_interbank";
             var body = new {
@@ -40,7 +37,6 @@ namespace APIBanca.Repositories
                 p_amount = amount,
                 p_currency = currency,
                 p_descripcion = descripcion,
-                p_user_id = userId
             };
 
             var req = new HttpRequestMessage(HttpMethod.Post, url)

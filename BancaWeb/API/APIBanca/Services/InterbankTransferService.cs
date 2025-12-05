@@ -1,36 +1,73 @@
-using APIBanca.Models;
 using APIBanca.Repositories;
+using APIBanca.Models;
+using APIBanca.Handlers;
 
 namespace APIBanca.Services
 {
     public class InterbankTransferService
     {
-        private readonly InterbankTransferRepository _repository;
+        private readonly InterbankTransferRepository _repo;
+        private readonly BankSocketHandler _socket;
         private readonly ILogger<InterbankTransferService> _logger;
 
         public InterbankTransferService(
-            InterbankTransferRepository repository,
+            InterbankTransferRepository repo,
+            BankSocketHandler socket,
             ILogger<InterbankTransferService> logger)
         {
-            _repository = repository;
+            _repo = repo;
+            _socket = socket;
             _logger = logger;
         }
 
-        public async Task<InterbankTransferResponse> TransferInterbank(
-            InterbankTransferRequest req, 
-            Guid userId)
+        public async Task<InterbankTransferResponse> TransferAsync(
+            string fromIban,
+            string toIban,
+            decimal amount,
+            string currency,
+            string? descripcion)
         {
-            _logger.LogInformation($"🚀 Iniciando transferencia interbancaria de {req.from} a {req.to}");
+            if (fromIban == toIban)
+                throw new InvalidOperationException("No puedes transferir a la misma cuenta");
 
-            // Por ahora solo llamamos al repositorio
-            // Más adelante agregaremos la lógica de WebSocket aquí
-            return await _repository.TransferInterbankAsync(
-                req.from, 
-                req.to, 
-                req.amount, 
-                req.currency, 
-                req.description, 
-                userId);
+            if (currency != "CRC" && currency != "USD")
+                throw new InvalidOperationException("Moneda debe ser CRC o USD");
+
+            var transferId = $"TX{Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper()}";
+            
+            _logger.LogInformation($"📝 Transferencia {transferId}");
+            _logger.LogInformation($"   {fromIban} → {toIban}");
+            _logger.LogInformation($"   {amount} {currency}");
+
+            var dbResult = await _repo.TransferInterbankAsync(
+                fromIban,
+                toIban,
+                amount,
+                currency,
+                descripcion
+            );
+
+            await _socket.SendInterbankTransfer(new 
+            {
+                type = "transfer.intent",
+                data = new
+                {
+                    id = transferId,
+                    from = fromIban,
+                    to = toIban,
+                    amount = amount,
+                    currency = currency
+                }
+            });
+
+            _logger.LogInformation($"✅ Intent enviado al Banco Central");
+
+            return new InterbankTransferResponse
+            {
+                id = transferId,
+                status = "PENDING",
+                receipt_number = dbResult.receipt_number
+            };
         }
     }
 }

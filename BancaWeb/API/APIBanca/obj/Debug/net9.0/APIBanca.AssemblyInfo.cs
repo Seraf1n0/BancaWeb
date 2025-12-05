@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("APIBanca")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14e63b2591ee7a03dd69409f78602b43a73c809c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fff7007dc7e95e8524a855a65877b62f4119a19d")]
 [assembly: System.Reflection.AssemblyProductAttribute("APIBanca")]
 [assembly: System.Reflection.AssemblyTitleAttribute("APIBanca")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

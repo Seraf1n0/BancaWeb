@@ -11,22 +11,19 @@ namespace APIBanca.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task<UserAuthResponse?> ValidarUsuario(string usernameOrEmail, string password)
+        public async Task<UserAuthResponse?> ValidarUsuario(string usernameOrEmail, string passwordPlano)
         {
             var usuario = await _usuarioRepository.ObtenerUsuarioPorUsernameOEmailAsync(usernameOrEmail);
-            
+
             if (usuario == null)
-            {
-                return null; 
-            }
+                return null;
 
+            string hashGuardado = usuario.ContrasenaHash;
 
-            bool passwordValida = password == usuario.ContrasenaHash;
+            bool valido = BCrypt.Net.BCrypt.Verify(passwordPlano, hashGuardado);
 
-            if (!passwordValida)
-            {
-                return null; 
-            }
+            if (!valido)
+                return null;
 
             return usuario;
         }
