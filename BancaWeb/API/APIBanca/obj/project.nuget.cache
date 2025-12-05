@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9e3IPVDmlA0=",
+  "dgSpecHash": "aP3q3Y+28lg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\Api\\APIBanca\\APIBanca.csproj",
+  "projectFilePath": "C:\\Users\\bryan\\Documents\\Proye3-Desarrollo\\BancaWeb\\BancaWeb\\API\\APIBanca\\APIBanca.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bryan\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\functions-csharp\\1.3.2\\functions-csharp.1.3.2.nupkg.sha512",
@@ -23,11 +23,17 @@
     "C:\\Users\\bryan\\.nuget\\packages\\npgsql\\9.0.4\\npgsql.9.0.4.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\postgrest-csharp\\3.5.1\\postgrest-csharp.3.5.1.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\realtime-csharp\\6.0.4\\realtime-csharp.6.0.4.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\socketio.core\\3.1.2\\socketio.core.3.1.2.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\socketio.serializer.core\\3.1.2\\socketio.serializer.core.3.1.2.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\socketio.serializer.systemtextjson\\3.1.2\\socketio.serializer.systemtextjson.3.1.2.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\socketioclient\\3.1.2\\socketioclient.3.1.2.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\supabase-core\\0.0.3\\supabase-core.0.0.3.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\supabase-csharp\\0.16.2\\supabase-csharp.0.16.2.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\supabase-storage-csharp\\1.4.0\\supabase-storage-csharp.1.4.0.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.0.1\\system.identitymodel.tokens.jwt.8.0.1.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\system.reactive\\5.0.0\\system.reactive.5.0.0.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
+    "C:\\Users\\bryan\\.nuget\\packages\\system.text.json\\8.0.4\\system.text.json.8.0.4.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\system.threading.channels\\5.0.0\\system.threading.channels.5.0.0.nupkg.sha512",
     "C:\\Users\\bryan\\.nuget\\packages\\websocket.client\\4.6.1\\websocket.client.4.6.1.nupkg.sha512"
   ],
