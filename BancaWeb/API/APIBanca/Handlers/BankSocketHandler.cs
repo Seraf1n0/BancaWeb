@@ -5,12 +5,14 @@ using APIBanca.Repositories;
 
 namespace APIBanca.Handlers
 {
+
     public class BankSocketHandler : IDisposable
     {
         private readonly SocketIONamespace _socket;
         private readonly ILogger<BankSocketHandler> _logger;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IServiceScopeFactory _scopeFactory; // servicios scoped desde singleton
 
+        // Credenciales necesarias para ingresar al banco central
         private readonly string _url = "http://137.184.36.3:6000";
         private readonly string _bankId = "B01";
         private readonly string _bankName = "Banca Prometedora";
@@ -25,15 +27,17 @@ namespace APIBanca.Handlers
             _logger.LogInformation($"URL: {_url}");
             _logger.LogInformation($"Bank ID: {_bankId}");
 
+            // Configuración de reconexión esto porque al inicio no funcionaba correctamente 
             var options = new SocketIOOptions
             {
-                Reconnection = true,
-                ReconnectionDelay = 5000,
-                ReconnectionAttempts = 10,
+                Reconnection = true,                  // Reconecta automaticamente 
+                ReconnectionDelay = 5000,             // Espera 5 segundos por intento 
+                ReconnectionAttempts = 10,            // MSolo 10 intentos 
                 Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
                 ConnectionTimeout = TimeSpan.FromSeconds(20)
             };
 
+            // Parametros a autenticar según lo solicitado por el profe
             options.Auth = new Dictionary<string, string>
             {
                 { "bankId", _bankId },
@@ -43,6 +47,7 @@ namespace APIBanca.Handlers
 
             _socket = new SocketIONamespace(_url, options);
 
+            // Creamos los handlers para los eventos
             ConfigureEvents();
 
             _socket.OnConnected += (sender, e) =>
@@ -66,26 +71,33 @@ namespace APIBanca.Handlers
                 _logger.LogError($"Error: {e}");
             };
 
-            _logger.LogInformation("🔧 BankSocketHandler configurado");
+            _logger.LogInformation("BankSocketHandler configurado");
         }
 
+
+        
+        //Configuración para escucha 
         private void ConfigureEvents()
         {
+            // Para informa sobre al autenticación 
             _socket.On("authenticated", response =>
             {
                 _logger.LogInformation("AUTENTICADO!");
             });
 
+            // Si el banco nos acepta la transferencia
             _socket.On("transfer.accept", response =>
             {
                 _logger.LogInformation("transfer.accept");
             });
 
-            
+            // Listener principal: procesa array de eventos del Banco Central
+            // Agarra  el array que envia el profe para los eventos
             _socket.On("event", async response =>
             {
                 try
                 {
+                    // Aqui obtenemos los datos del evento
                     var evt = response.GetValue<JsonElement>(0);
 
                     var eventType = evt.GetProperty("type").GetString();
@@ -93,6 +105,7 @@ namespace APIBanca.Handlers
 
                     Console.WriteLine($"═══ Procesando evento: {eventType} ═══");
 
+                    // Enviamos el evento dependiendo del tipo que llegue
                     switch (eventType)
                     {
                         case "transfer.reserve":
@@ -116,12 +129,14 @@ namespace APIBanca.Handlers
                             break;
                     }
                 }
+                // Por si da algún error fuera del flujo
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error procesando evento");
                 }
             });
         }
+
 
         public async Task ConnectAsync()
         {
@@ -130,7 +145,7 @@ namespace APIBanca.Handlers
                 _logger.LogInformation("Conectando...");
 
                 await _socket.ConnectAsync();
-                await Task.Delay(2000);
+                await Task.Delay(2000); // esperamos un poco para ver si nos conectamos
 
                 if (_socket.Connected)
                     _logger.LogInformation($"CONECTADO ID: {_socket.Id}");
@@ -143,6 +158,9 @@ namespace APIBanca.Handlers
             }
         }
 
+
+        
+        // iniciamos la transferencia enviando el intent
         public async Task SendInterbankTransfer(object data)
         {
             if (!_socket.Connected)
@@ -156,6 +174,8 @@ namespace APIBanca.Handlers
             _logger.LogInformation("Emit completado");
         }
 
+
+        // Aqui congelamos los montos y vemos si hay fondos 
         private async Task HandleTransferReserve(JsonElement data)
         {
             Console.WriteLine("═══ transfer.reserve RECIBIDO ═══");
@@ -164,10 +184,11 @@ namespace APIBanca.Handlers
             {
                 var txId = data.GetProperty("id").GetString();
 
+                // Scope para usar el singleton  
                 using var scope = _scopeFactory.CreateScope();
                 var reserveRepo = scope.ServiceProvider.GetRequiredService<Repositories.TransferReserveRepository>();
 
-                
+                // Obtengo mi ultimo mov
                 var (fromIban, amount) = await reserveRepo.GetLastMovementAsync();
 
                 if (string.IsNullOrEmpty(fromIban))
@@ -178,8 +199,10 @@ namespace APIBanca.Handlers
 
                 _logger.LogInformation($"Reservando: {fromIban} → {amount}");
 
+                // congelamos plata
                 var (ok, reason) = await reserveRepo.ReserveAsync(fromIban, amount, txId);
 
+                // Respondemos al banco
                 await _socket.EmitAsync("event", new
                 {
                     type = "transfer.reserve.result",
@@ -194,6 +217,7 @@ namespace APIBanca.Handlers
             }
         }
 
+¿
         private async Task HandleTransferCredit(JsonElement data)
         {
             Console.WriteLine("═══ transfer.credit RECIBIDO ═══");
@@ -201,14 +225,15 @@ namespace APIBanca.Handlers
             try
             {
                 var txId = Guid.Parse(data.GetProperty("id").GetString());
-                var to = data.GetProperty("to").GetString();
-                var from = data.GetProperty("from").GetString();
+                var to = data.GetProperty("to").GetString();       // IBAN destino
+                var from = data.GetProperty("from").GetString();   // IBAN origen 
                 var amount = data.GetProperty("amount").GetDecimal();
                 var currency = data.GetProperty("currency").GetString();
 
                 using var scope = _scopeFactory.CreateScope();
                 var creditRepo = scope.ServiceProvider.GetRequiredService<Repositories.TransferCreditRepository>();
 
+                // Crear movimiento y sumar al saldo
                 var (ok, reason) = await creditRepo.CreditAsync(
                     txId, to, from, amount, currency, "Transferencia interbancaria recibida"
                 );
@@ -227,12 +252,12 @@ namespace APIBanca.Handlers
             }
         }
 
+
         private async Task HandleTransferDebit(JsonElement data)
         {
             Console.WriteLine("═══ transfer.debit RECIBIDO ═══");
             Console.WriteLine(data.ToString());
 
-            
             var txId = data.GetProperty("id").GetString();
             var fromIban = data.GetProperty("from").GetString(); 
 
@@ -279,7 +304,7 @@ namespace APIBanca.Handlers
         {
             try
             {
-                _logger.LogInformation("🔌 Cerrando conexión con el Banco Central...");
+                _logger.LogInformation("Cerrando conexión con el Banco Central...");
 
                 _socket?.DisconnectAsync().Wait();
                 _socket?.Dispose();
