@@ -19,7 +19,7 @@ const submitData = async () => {
 }
 
 async function login(username: string, password: string) {
-  const response = await fetch('http://localhost:5015/api/v1/auth/login', {
+  const response = await fetch('http://86.48.22.73/api/v1/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
