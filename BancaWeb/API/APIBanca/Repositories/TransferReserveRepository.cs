@@ -23,6 +23,43 @@ namespace APIBanca.Repositories
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _supabaseKey);
         }
 
+        
+        public async Task<(string fromIban, decimal amount)> GetLastMovementAsync()
+        {
+            try
+            {
+                var rpcUrl = $"{_supabaseUrl}/rest/v1/rpc/sp_ultimo_mov";
+
+                var content = new StringContent("{}", Encoding.UTF8, "application/json");
+
+                var httpResponse = await _httpClient.PostAsync(rpcUrl, content);
+
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"Error consultando último movimiento: {httpResponse.StatusCode}");
+                    return ("", 0);
+                }
+
+                var response = await httpResponse.Content.ReadAsStringAsync();
+
+                var json = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(response);
+
+                if (json == null || json.Count == 0)
+                    return ("", 0);
+
+                string from = json[0]["from_iban"].GetString()!;
+                decimal amount = json[0]["amount"].GetDecimal();
+
+                return (from, amount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error obteniendo último movimiento");
+                return ("", 0);
+            }
+        }
+
+        
         public async Task<(bool ok, string? reason)> ReserveAsync(string accountIban, decimal amount, string transferId)
         {
             try
@@ -48,25 +85,18 @@ namespace APIBanca.Repositories
                 }
 
                 var response = await httpResponse.Content.ReadAsStringAsync();
-                
-                if (string.IsNullOrEmpty(response) || response == "[]")
-                {
-                    _logger.LogError("Respuesta vacía del stored procedure");
-                    return (false, "DB_ERROR");
-                }
 
-                var json = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, System.Text.Json.JsonElement>>>(response);
-                
+                var json = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(response);
+
                 if (json == null || json.Count == 0)
-                {
                     return (false, "INVALID_RESPONSE");
-                }
 
-                var firstRow = json[0];
-                bool ok = firstRow["ok"].GetBoolean();
-                string? reason = firstRow.ContainsKey("reason") && firstRow["reason"].ValueKind != System.Text.Json.JsonValueKind.Null
-                    ? firstRow["reason"].GetString()
-                    : null;
+                bool ok = json[0]["ok"].GetBoolean();
+                string? reason =
+                    json[0].ContainsKey("reason") &&
+                    json[0]["reason"].ValueKind != JsonValueKind.Null
+                        ? json[0]["reason"].GetString()
+                        : null;
 
                 return (ok, reason);
             }

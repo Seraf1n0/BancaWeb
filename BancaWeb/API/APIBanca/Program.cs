@@ -9,6 +9,9 @@ using APIBanca.Handlers;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseKey = builder.Configuration["Supabase:Key"];
+
 builder.Services.AddHttpClient<AuthUsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddControllers();
@@ -99,12 +102,25 @@ builder.Services.AddScoped<ResetPasswordRepository>();
 builder.Services.AddHttpClient<InterbankTransferRepository>();
 builder.Services.AddHttpClient<TransferReserveRepository>();
 builder.Services.AddScoped<TransferReserveRepository>();
+builder.Services.AddHttpClient<TransferCreditRepository>();
+builder.Services.AddScoped<TransferCreditRepository>();
 builder.Services.AddSingleton<BankSocketHandler>(sp =>
 {
     var logger = sp.GetRequiredService<ILogger<BankSocketHandler>>();
     var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
     return new BankSocketHandler(logger, scopeFactory);
 });
+
+
+builder.Services.AddHttpClient<TransferDebitRepository>(c =>
+{
+    c.BaseAddress = new Uri(supabaseUrl + "/rest/v1/");
+    c.DefaultRequestHeaders.Add("apikey", supabaseKey);
+    c.DefaultRequestHeaders.Add("Authorization", $"Bearer {supabaseKey}");
+});
+
+
+
 builder.Services.AddScoped<InterbankTransferService>();
 
 

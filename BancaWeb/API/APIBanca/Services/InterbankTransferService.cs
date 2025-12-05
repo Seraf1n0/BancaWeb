@@ -34,11 +34,12 @@ namespace APIBanca.Services
                 throw new InvalidOperationException("Moneda debe ser CRC o USD");
 
             var transferId = $"TX{Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper()}";
-            
+
             _logger.LogInformation($"📝 Transferencia {transferId}");
             _logger.LogInformation($"   {fromIban} → {toIban}");
             _logger.LogInformation($"   {amount} {currency}");
 
+            // esto es para supabase
             var dbResult = await _repo.TransferInterbankAsync(
                 fromIban,
                 toIban,
@@ -47,6 +48,7 @@ namespace APIBanca.Services
                 descripcion
             );
 
+            // Aqui donde lo envio
             await _socket.SendInterbankTransfer(new 
             {
                 type = "transfer.intent",
@@ -60,7 +62,8 @@ namespace APIBanca.Services
                 }
             });
 
-            _logger.LogInformation($"✅ Intent enviado al Banco Central");
+
+            _logger.LogInformation("Intent enviado al Banco Central");
 
             return new InterbankTransferResponse
             {
